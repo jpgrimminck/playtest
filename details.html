@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalles de Canción - v1.3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #363739;
+      font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .caratula {
+      width: 200px;
+      height: 200px;
+      border-radius: 30px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      background-color: red;
+    }
+    .info {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .nombreCancion {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+    .artista {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #B3B3B3;
+    }
+    #seekBar {
+      width: 80%;
+      margin: 20px 0;
+    }
+    #playPause {
+      width: 150px;
+      height: 150px;
+      border: none;
+      border-radius: 50%;
+      background: white;
+      color: black;
+      font-size: 64px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    #playPause:hover { background: #eee; }
+    .icon { width: 0; height: 0; border-style: solid; }
+    .play-icon { border-width: 20px 0 20px 35px; border-color: transparent transparent transparent black; }
+    .pause-icon { display: flex; gap: 10px; }
+    .pause-icon div { width: 10px; height: 40px; background: black; }
+    button#backBtn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="caratula" id="cover"></div>
+  <div class="info">
+    <div class="nombreCancion" id="nombreCancion">Título de la canción</div>
+    <div class="artista" id="artista">Nombre del artista</div>
+  </div>
+  <!-- Deslizador arriba del botón play -->
+  <input type="range" id="seekBar" value="0" min="0" step="1">
+  <button id="playPause"><div id="icon" class="icon play-icon"></div></button>
+  <button id="backBtn" onclick="history.back()">Volver</button>
+  <script>
+    // Mostrar carátula según parámetro URL
+    const params = new URLSearchParams(location.search);
+    const idx = params.get('song');
+    const coverEl = document.getElementById('cover');
+    if (idx) coverEl.style.backgroundImage = `url('cover${idx}.jpeg')`;
+    // Cargar título y artista desde localStorage
+    document.getElementById('nombreCancion').textContent = localStorage.getItem('selectedNombre') || '';
+    document.getElementById('artista').textContent       = localStorage.getItem('selectedArtista') || '';
+    // Toggle icono play/pause
+    const playPauseBtn = document.getElementById('playPause');
+    playPauseBtn.addEventListener('click', () => {
+      const iconEl = document.getElementById('icon');
+      if (iconEl.classList.contains('play-icon')) {
+        iconEl.className = 'pause-icon'; iconEl.innerHTML = '<div></div><div></div>';
+      } else {
+        iconEl.className = 'play-icon'; iconEl.innerHTML = '';
+      }
+    });
+  </script>
+</body>
+</html>
