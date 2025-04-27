@@ -2,7 +2,7 @@
   "name": "Reproductor de Música",
   "short_name": "Música",
   "description": "Reproductor de música con secciones",
-  "start_url": "./index.html",
+  "start_url": ".",
   "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#222222",
