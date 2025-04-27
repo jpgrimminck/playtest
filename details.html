@@ -2,103 +2,889 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Detalles de Canción - v1.3</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui, viewport-fit=cover">
+  <meta name="theme-color" content="#222222" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#222222" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Música">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="description" content="Reproductor de música con secciones">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="screen-orientation" content="portrait">
+  <title>Detalles de Canción</title>
   <style>
+    @media all and (display-mode: fullscreen) {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
+    @media all and (display-mode: standalone) {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
+    :root {
+      --sat: env(safe-area-inset-top);
+      --sab: env(safe-area-inset-bottom);
+      --sal: env(safe-area-inset-left);
+      --sar: env(safe-area-inset-right);
+    }
     html, body {
-      margin: 0;
+      position: static !important;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow: auto !important;
+    }
+    body { 
+      margin: 0; 
       padding: 0;
-      height: 100%;
-      background-color: #363739;
-      font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #363739;
+      color: white;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      position: fixed;
+      overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      padding-top: 0px;
     }
-    .caratula {
-      width: 200px;
-      height: 200px;
-      border-radius: 30px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      background-color: red;
+    @supports (-webkit-touch-callout: none) {
+      body {
+        height: -webkit-fill-available;
+      }
     }
     .info {
-      margin-top: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
       text-align: center;
+      box-sizing: border-box;
+      height: 320px; /* Reserva espacio suficiente para carátula y título */
     }
-    .nombreCancion {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #FFFFFF;
+    .cover-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 380px;
+      height: 380px;
+      z-index: 2;
     }
-    .artista {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #B3B3B3;
+    .cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(3px);
+      opacity: 1;
+      pointer-events: none;
+      border-radius: 0;
+      mask-image: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 50%,
+        rgba(0, 0, 0, 1) 100%
+      );
+      -webkit-mask-image: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 0.2) 0%,
+        rgba(0, 0, 0, 0.1) 20%,
+        rgba(0, 0, 0, 0) 70%
+      );
+    }
+    .back-arrow {
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 20px);
+      left: 20px;
+      font-size: 36px;
+      color: #4a9eff;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+      z-index: 10;
+      background: rgba(34,34,34,0.7);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+    .back-arrow:hover {
+      transform: translateX(-5px);
+    }
+    button.section-btn {
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 16px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100px;
+      transition: background-color 0.3s;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+    button.section-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(to right, #4a9eff var(--progreso, 0%), #444 var(--progreso, 0%));
+      z-index: 1;
+    }
+    button.section-btn span {
+      position: relative;
+      z-index: 2;
+      display: block;
+      background: linear-gradient(to right, 
+        #000 0%,
+        #000 var(--progreso-texto, 0%),
+        #fff var(--progreso-texto, 0%),
+        #fff 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    button.section-btn span.active {
+      color: #000;
+    }
+    button.section-btn:hover {
+      background: #555;
+    }
+    button.section-btn.selected {
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.8);
+      outline: 2px solid #4a9eff;
+      outline-offset: -2px;
+    }
+    .seekbar-touch-area {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: pan-y;
     }
     #seekBar {
       width: 80%;
+      height: 32px;
       margin: 20px 0;
+      outline: none !important;
+      background: transparent;
     }
-    #playPause {
-      width: 150px;
-      height: 150px;
+    #seekBar:focus {
+      outline: none !important;
+    }
+    #seekBar::-webkit-slider-thumb {
+      width: 28px;
+      height: 28px;
+    }
+    #seekBar::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+    }
+    #seekBar::-ms-thumb {
+      width: 28px;
+      height: 28px;
+    }
+    #playPause, #rewind, #forward {
+      background: transparent !important;
       border: none;
       border-radius: 50%;
-      background: white;
-      color: black;
-      font-size: 64px;
+      padding: 0;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      outline: none !important;
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      -moz-user-select: none;
+      touch-action: manipulation;
+      transition: box-shadow 0.2s;
     }
-    #playPause:hover { background: #eee; }
-    .icon { width: 0; height: 0; border-style: solid; }
-    .play-icon { border-width: 20px 0 20px 35px; border-color: transparent transparent transparent black; }
-    .pause-icon { display: flex; gap: 10px; }
-    .pause-icon div { width: 10px; height: 40px; background: black; }
-    button#backBtn {
-      margin-top: 10px;
-      padding: 8px 12px;
-      font-size: 1rem;
-      cursor: pointer;
+    #playPause:focus, #rewind:focus, #forward:focus {
+      outline: none !important;
+    }
+    #playPause {
+      width: 108px;
+      height: 108px;
+    }
+    #rewind, #forward {
+      width: 54px;
+      height: 54px;
+    }
+    #secciones {
+      display: grid;
+      grid-template-columns: repeat(var(--num-cols, 2), 100px);
+      grid-auto-rows: auto;
+      gap: 10px;
+      margin: 20px 0;
+      justify-content: center; /* Centra el bloque de columnas */
+      max-width: 340px;
+    }
+    #error-message {
+      color: red;
+      margin: 10px;
+      display: none;
+    }
+    .player-controls {
+      display: none;
+    }
+    .basic-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin: 20px 0;
+    }
+    .player-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+    .info h1 {
+      position: absolute;
+      top: 200px; /* Justo debajo de la carátula */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      margin: 0;
+      z-index: 3;
+    }
+    #playPause.playing {
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.8);
+    }
+    #rewind:active, #forward:active {
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.8);
+    }
+    #fixedHeader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+    #fixedHeader h1 {
+      margin: 0;
+      margin-top: 140px;
+      color: white;
+      font-size: 2em;
+      text-align: center;
+    }
+    .secciones-fijas {
+      position: fixed;
+      top: 220px; /* Puedes cambiar este valor para mover el contenedor de secciones */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 30;
+    }
+    .controles-fijos {
+      position: fixed;
+      bottom: 40px; /* Puedes cambiar este valor para mover el contenedor de controles básicos */
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 20;
     }
   </style>
 </head>
 <body>
-  <div class="caratula" id="cover"></div>
-  <div class="info">
-    <div class="nombreCancion" id="nombreCancion">Título de la canción</div>
-    <div class="artista" id="artista">Nombre del artista</div>
+  <div id="fixedHeader"></div>
+  <a class="back-arrow" id="backButton">
+    <!-- Flecha SVG apuntando a la izquierda -->
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 4l-8 8 8 8" stroke="#4a9eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+  <div class="info" id="detailsContainer"></div>
+  <div id="error-message"></div>
+  <div id="loading-audio" style="display:none; color:#4a9eff; font-size:1.2em; margin:20px;">Cargando audio...</div>
+  <div class="secciones-fijas">
+    <div class="player-controls" id="playerControls">
+      <div id="secciones"></div>
+    </div>
   </div>
-  <!-- Deslizador arriba del botón play -->
-  <input type="range" id="seekBar" value="0" min="0" step="1">
-  <button id="playPause"><div id="icon" class="icon play-icon"></div></button>
-  <button id="backBtn" onclick="history.back()">Volver</button>
+  <div class="controles-fijos">
+    <div class="basic-controls">
+      <div class="seekbar-touch-area">
+        <input type="range" id="seekBar" value="0" min="0" step="0.1">
+      </div>
+      <div class="player-row">
+        <button id="rewind" aria-label="Rebobinar">
+          <svg id="rewindIcon" width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="27" cy="27" r="24" fill="white" stroke="#444" stroke-width="4"/>
+            <polygon points="32,16 16,27 32,38" fill="#222"/>
+            <polygon points="38,16 22,27 38,38" fill="#222"/>
+          </svg>
+        </button>
+        <button id="playPause" aria-label="Play/Pause">
+          <svg id="playPauseIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <polygon points="42,33 81,54 42,75" fill="#222"/>
+          </svg>
+        </button>
+        <button id="forward" aria-label="Adelantar">
+          <svg id="forwardIcon" width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="27" cy="27" r="24" fill="white" stroke="#444" stroke-width="4"/>
+            <polygon points="22,16 38,27 22,38" fill="#222"/>
+            <polygon points="16,16 32,27 16,38" fill="#222"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <section id="etiquetasGlobales" style="display: none;">
+    <span data-etiqueta="intro">Intro</span>
+    <span data-etiqueta="estrofa">Estrofa</span>
+    <span data-etiqueta="pre-coro">Pre Coro</span>
+    <span data-etiqueta="coro">Coro</span>
+    <span data-etiqueta="puente">Puente</span>
+    <span data-etiqueta="instrumental">Solo</span>
+    <span data-etiqueta="coda">Coda</span>
+    
+  </section>
+
   <script>
-    // Mostrar carátula según parámetro URL
-    const params = new URLSearchParams(location.search);
-    const idx = params.get('song');
-    const coverEl = document.getElementById('cover');
-    if (idx) coverEl.style.backgroundImage = `url('cover${idx}.jpeg')`;
-    // Cargar título y artista desde localStorage
-    document.getElementById('nombreCancion').textContent = localStorage.getItem('selectedNombre') || '';
-    document.getElementById('artista').textContent       = localStorage.getItem('selectedArtista') || '';
-    // Toggle icono play/pause
+    // Variable global de desfase para ajustar el inicio de cada sección
+    const DESFASE = 0.2; // Ajusta este valor según el desfase observado (en segundos)
+    const MARGEN_VISUAL = 0.5; // margen de tiempo para mantener la selección visual
+
+    // Obtener etiquetas desde la sección centralizada
+    const etiquetasGlobales = {};
+    document.querySelectorAll('#etiquetasGlobales span').forEach(span => {
+      const key = span.getAttribute('data-etiqueta');
+      const value = span.textContent;
+      etiquetasGlobales[key] = value;
+    });
+
+    // Obtener parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+    const songName = params.get("song");
+    const cover = params.get("cover");
+    const title = params.get("title");
+    const audioUrl = params.get("audio");
+    const time = params.get("time");
+
+    // Configuración de secciones por canción
+    const seccionesPorCancion = {
+      "1": [
+        { etiqueta: "intro", inicio: 0 },
+        { etiqueta: "estrofa", inicio: 11 },
+        { etiqueta: "estrofa", inicio: 28.4 },
+        { etiqueta: "pre-coro", inicio: 46.3 },
+        { etiqueta: "coro", inicio: 59.3 },
+        { etiqueta: "instrumental", inicio: 76.4 },
+        { etiqueta: "estrofa", inicio: 95.9 },
+        { etiqueta: "pre-coro", inicio: 114.2 },
+        { etiqueta: "coro", inicio: 127.2 },
+        { etiqueta: "coro", inicio: 144.3 }
+      ],
+      "2": [
+        { etiqueta: "estrofa", inicio: 0 },
+        { etiqueta: "estrofa", inicio: 25.6 },
+        { etiqueta: "coro", inicio: 52.5 },
+        { etiqueta: "estrofa", inicio: 91.8 },
+        { etiqueta: "coro", inicio: 119 },
+        { etiqueta: "estrofa", inicio: 158.9 },
+        { etiqueta: "coda", inicio: 188 }
+      ],
+      "3": [
+        {etiqueta: "estrofa", inicio: 0},
+        {etiqueta: "estrofa", inicio: 26.4},
+        {etiqueta: "estrofa", inicio: 39.6},
+        {etiqueta: "pre-coro", inicio: 52.6},
+        {etiqueta: "pre-coro", inicio: 65.8},
+        {etiqueta: "instrumental", inicio: 85.1},
+        {etiqueta: "estrofa", inicio: 98.5},
+        {etiqueta: "estrofa", inicio: 111.7},
+        {etiqueta: "estrofa", inicio: 124.7},
+        {etiqueta: "estrofa", inicio: 137.9},
+        {etiqueta: "pre-coro", inicio: 151},
+        {etiqueta: "pre-coro", inicio: 164},
+        {etiqueta: "instrumental", inicio: 183.2},
+        {etiqueta: "puente", inicio: 209.9},
+        {etiqueta: "coda", inicio: 249.1}
+      ],
+      
+
+    };
+
+    // Inicializar elementos del DOM
+    const audioElement = document.createElement('audio');
+    audioElement.id = 'audio';
+    audioElement.src = audioUrl;
+    audioElement.preload = 'auto';
+    document.body.appendChild(audioElement);
+
+    const audio = document.getElementById('audio');
     const playPauseBtn = document.getElementById('playPause');
-    playPauseBtn.addEventListener('click', () => {
-      const iconEl = document.getElementById('icon');
-      if (iconEl.classList.contains('play-icon')) {
-        iconEl.className = 'pause-icon'; iconEl.innerHTML = '<div></div><div></div>';
-      } else {
-        iconEl.className = 'play-icon'; iconEl.innerHTML = '';
+    const rewindBtn = document.getElementById('rewind');
+    const forwardBtn = document.getElementById('forward');
+    const seekBar = document.getElementById('seekBar');
+    const errorMessage = document.getElementById('error-message');
+    const playerControls = document.getElementById('playerControls');
+    const loadingAudio = document.getElementById('loading-audio');
+    const basicControls = document.querySelector('.basic-controls');
+    let currentSectionIndex = null;
+    let seccionForzadaHasta = null;
+    let isSeeking = false;
+
+    // Ocultar controles y mostrar mensaje de carga al inicio
+    basicControls.style.display = 'none';
+    playerControls.style.display = 'none';
+    loadingAudio.style.display = 'block';
+
+    let audioReady = false;
+    let pendingPlay = false;
+
+    // Mostrar controles cuando el audio esté completamente cargado
+    audioElement.addEventListener('canplaythrough', () => {
+      audioReady = true;
+      loadingAudio.style.display = 'none';
+      basicControls.style.display = '';
+      if (document.getElementById('secciones').children.length > 0) {
+        playerControls.style.display = 'block';
+      }
+      if (pendingPlay) {
+        audio.play();
+        pendingPlay = false;
       }
     });
+
+    // Cuando la metadata esté lista, establece el máximo del slider y actualiza la visualización
+    seekBar.disabled = true;
+    audioElement.addEventListener('loadedmetadata', () => {
+      seekBar.max = audioElement.duration;
+      seekBar.disabled = false;
+      actualizarBotonSeleccionado(0);
+    });
+
+    // Forzar la carga del audio
+    audioElement.load();
+
+    // Mostrar detalles de la canción
+    if (songName) {
+      document.getElementById("fixedHeader").innerHTML = `
+        <div class="cover-container">
+          <img class="cover" src="${cover}" alt="Carátula">
+        </div>
+        <h1>${title}</h1>
+      `;
+
+      // Verificar si la canción tiene secciones configuradas
+      const secciones = seccionesPorCancion[songName];
+      if (secciones) {
+        playerControls.style.display = 'block';
+        crearBotonesSecciones(secciones);
+      }
+      
+      // Inicializar controles básicos de audio para todas las canciones
+      inicializarControlesAudio();
+    } else {
+      document.getElementById("fixedHeader").innerHTML = `<p>No se encontró información para esta canción.</p>`;
+    }
+
+    // Función para mostrar errores
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      console.error(message);
+    }
+
+    // Función para crear los botones de secciones
+    function crearBotonesSecciones(secciones) {
+      const contenedor = document.getElementById('secciones');
+      // Determinar número de columnas
+      let numCols = 2;
+      if (secciones.length > 10) numCols = 3;
+      contenedor.style.setProperty('--num-cols', numCols);
+      // Máximo 5 filas por columna
+      const maxRows = 5;
+      // Limpiar el contenedor
+      contenedor.innerHTML = '';
+      currentSectionIndex = null;
+      secciones.forEach(({ etiqueta, inicio }, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'section-btn';
+        // Distribuir por columnas: primero llena la primera columna, luego la segunda, etc.
+        const col = Math.floor(index / maxRows) + 1;
+        const row = (index % maxRows) + 1;
+        btn.style.gridColumn = col;
+        btn.style.gridRow = row;
+        btn.setAttribute('data-section-index', index);
+        const span = document.createElement('span');
+        span.textContent = etiquetasGlobales[etiqueta] || etiqueta; // Usar etiqueta centralizada
+        btn.appendChild(span);
+        btn.onclick = () => {
+          audio.pause();
+          audio.currentTime = Math.max(0, inicio - DESFASE); // Aplica el desfase aquí
+          currentSectionIndex = index;
+          seccionForzadaHasta = inicio; // Fuerza la selección hasta que el audio llegue a este punto
+          actualizarBotonSeleccionado(audio.currentTime, true);
+          // Actualizar el icono de play
+          const icon = document.getElementById('playPauseIcon');
+          icon.innerHTML = `
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <polygon points="42,33 81,54 42,75" fill="#222"/>
+          `;
+        };
+        contenedor.appendChild(btn);
+      });
+    }
+
+    // Función para actualizar el botón seleccionado basado en el tiempo actual
+    function actualizarBotonSeleccionado(tiempoActual, forzarSeleccion = false) {
+      // Si el usuario está moviendo el slider, usar el valor del slider
+      if (isSeeking) {
+        tiempoActual = parseFloat(seekBar.value);
+      }
+      const secciones = seccionesPorCancion[songName];
+      if (!secciones) return;
+      const botones = document.querySelectorAll('.section-btn');
+      let ultimaSeccion = 0;
+      // Encontrar la sección actual
+      const tiempoConDesfase = Math.max(0, tiempoActual + DESFASE); // Aplica el desfase aquí también
+      for (let i = secciones.length - 1; i >= 0; i--) {
+        if (tiempoConDesfase >= secciones[i].inicio) {
+          ultimaSeccion = i;
+          break;
+        }
+      }
+      // Si hay una sección forzada y el audio ya llegó, desactívala
+      if (seccionForzadaHasta !== null && tiempoConDesfase >= seccionForzadaHasta + MARGEN_VISUAL) {
+        seccionForzadaHasta = null;
+      }
+      // Actualizar estado de los botones y su progreso
+      botones.forEach((btn, index) => {
+        btn.classList.remove('selected');
+        const seccion = secciones[index];
+        const siguienteSeccion = secciones[index + 1];
+        let progreso = 0;
+        if (index < ultimaSeccion) {
+          progreso = 1;
+        } else if (index === ultimaSeccion) {
+          // Solo la sección activa tiene relleno progresivo
+          const duracionSeccion = siguienteSeccion
+            ? siguienteSeccion.inicio - seccion.inicio
+            : ((audio.duration && !isNaN(audio.duration)) ? audio.duration : seekBar.max) - seccion.inicio;
+          const tiempoEnSeccion = tiempoConDesfase - seccion.inicio;
+          progreso = Math.min(Math.max(tiempoEnSeccion / duracionSeccion, 0), 1);
+        } else {
+          progreso = 0;
+        }
+        btn.style.setProperty('--progreso', `${progreso * 100}%`);
+        // Progreso del texto solo para la sección activa
+        const span = btn.querySelector('span');
+        if (index === ultimaSeccion && progreso >= 0.1) {
+          const progresoTexto = ((progreso - 0.1) / (0.9)) * 100;
+          span.style.setProperty('--progreso-texto', `${Math.max(0, Math.min(progresoTexto, 100))}%`);
+        } else if (index < ultimaSeccion) {
+          span.style.setProperty('--progreso-texto', '100%');
+        } else {
+          span.style.setProperty('--progreso-texto', '0%');
+        }
+        // Marcar como seleccionado
+        if (
+          (seccionForzadaHasta !== null && index === currentSectionIndex) ||
+          (seccionForzadaHasta === null && index === ultimaSeccion)
+        ) {
+          btn.classList.add('selected');
+        }
+      });
+    }
+
+    // Función para inicializar los controles de audio
+    function inicializarControlesAudio() {
+      // Actualizar la barra de progreso y el botón seleccionado
+      audio.addEventListener('timeupdate', () => {
+        if (!isNaN(audio.duration)) {
+          seekBar.max = audio.duration;
+          if (!isSeeking) {
+            seekBar.value = audio.currentTime;
+            actualizarBotonSeleccionado(audio.currentTime);
+          }
+        }
+      });
+      // Control de la barra de progreso
+      seekBar.addEventListener('mousedown', () => { isSeeking = true; });
+      seekBar.addEventListener('touchstart', () => { isSeeking = true; });
+      seekBar.addEventListener('input', () => {
+        actualizarBotonSeleccionado(seekBar.value);
+      });
+      seekBar.addEventListener('mouseup', () => {
+        isSeeking = false;
+        audio.currentTime = seekBar.value;
+        actualizarBotonSeleccionado(audio.currentTime);
+      });
+      seekBar.addEventListener('touchend', () => {
+        isSeeking = false;
+        audio.currentTime = seekBar.value;
+        actualizarBotonSeleccionado(audio.currentTime);
+      });
+      seekBar.addEventListener('mouseleave', () => {
+        if (isSeeking) {
+          isSeeking = false;
+          audio.currentTime = seekBar.value;
+          actualizarBotonSeleccionado(audio.currentTime);
+        }
+      });
+      // Actualizar progreso de secciones en tiempo real mientras se arrastra el slider
+      seekBar.addEventListener('touchmove', (e) => {
+        actualizarBotonSeleccionado(seekBar.value);
+      });
+      seekBar.addEventListener('mousemove', (e) => {
+        if (e.buttons) actualizarBotonSeleccionado(seekBar.value);
+      });
+      // Control del botón play/pause
+      playPauseBtn.addEventListener('click', () => {
+        const icon = document.getElementById('playPauseIcon');
+        if (audio.paused) {
+          if (audioReady) {
+            audio.play();
+          } else {
+            pendingPlay = true;
+          }
+          icon.innerHTML = `
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <rect x="34" y="33" width="14" height="42" rx="3" fill="#222"/>
+            <rect x="60" y="33" width="14" height="42" rx="3" fill="#222"/>
+          `;
+          playPauseBtn.classList.add('playing');
+        } else {
+          audio.pause();
+          icon.innerHTML = `
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <polygon points="42,33 81,54 42,75" fill="#222"/>
+          `;
+          playPauseBtn.classList.remove('playing');
+        }
+      });
+      // Asegura que la clase se sincronice si el usuario usa otros métodos para pausar/reproducir
+      audio.addEventListener('play', () => playPauseBtn.classList.add('playing'));
+      audio.addEventListener('pause', () => playPauseBtn.classList.remove('playing'));
+      // Control del botón rebobinar
+      let rewinding = false;
+      let lastRewindTimestamp = null;
+      function rewindStep(ts) {
+        if (!rewinding) return;
+        if (!lastRewindTimestamp) lastRewindTimestamp = ts;
+        const elapsed = ts - lastRewindTimestamp;
+        lastRewindTimestamp = ts;
+        const rewindSpeedPerSecond = 15;
+        const rewindAmount = (rewindSpeedPerSecond / 1000) * elapsed;
+        const newTime = Math.max(audio.currentTime - rewindAmount, 0);
+        audio.currentTime = newTime;
+        seekBar.value = newTime;
+        actualizarBotonSeleccionado(newTime);
+        if (rewinding) requestAnimationFrame(rewindStep);
+      }
+      function startRewind() {
+        if (rewinding) return;
+        rewinding = true;
+        lastRewindTimestamp = null;
+        requestAnimationFrame(rewindStep);
+      }
+      function stopRewind() {
+        rewinding = false;
+        lastRewindTimestamp = null;
+      }
+      rewindBtn.addEventListener('mousedown', startRewind);
+      rewindBtn.addEventListener('mouseup', stopRewind);
+      rewindBtn.addEventListener('mouseleave', stopRewind);
+      rewindBtn.addEventListener('touchstart', function(e) { e.preventDefault(); startRewind(); });
+      rewindBtn.addEventListener('touchend', stopRewind);
+      rewindBtn.addEventListener('touchcancel', stopRewind);
+      // Control del botón adelantar
+      let forwarding = false;
+      let lastForwardTimestamp = null;
+      function forwardStep(ts) {
+        if (!forwarding) return;
+        if (!lastForwardTimestamp) lastForwardTimestamp = ts;
+        const elapsed = ts - lastForwardTimestamp;
+        lastForwardTimestamp = ts;
+        const forwardSpeedPerSecond = 15;
+        const forwardAmount = (forwardSpeedPerSecond / 1000) * elapsed;
+        const newTime = Math.min(audio.currentTime + forwardAmount, audio.duration);
+        audio.currentTime = newTime;
+        seekBar.value = newTime;
+        actualizarBotonSeleccionado(newTime);
+        if (forwarding) requestAnimationFrame(forwardStep);
+      }
+      function startForward() {
+        if (forwarding) return;
+        forwarding = true;
+        lastForwardTimestamp = null;
+        requestAnimationFrame(forwardStep);
+      }
+      function stopForward() {
+        forwarding = false;
+        lastForwardTimestamp = null;
+      }
+      forwardBtn.addEventListener('mousedown', startForward);
+      forwardBtn.addEventListener('mouseup', stopForward);
+      forwardBtn.addEventListener('mouseleave', stopForward);
+      forwardBtn.addEventListener('touchstart', function(e) { e.preventDefault(); startForward(); });
+      forwardBtn.addEventListener('touchend', stopForward);
+      forwardBtn.addEventListener('touchcancel', stopForward);
+      // Variables para controlar los intervalos de rebobinar y adelantar
+      let isRewinding = false;
+      let isForwarding = false;
+      // Atajos de teclado
+      document.addEventListener('keydown', (event) => {
+        switch (event.key) {
+          case '-': // Rebobinar
+            if (!isRewinding) { // Evitar múltiples activaciones
+              isRewinding = true;
+              rewindBtn.dispatchEvent(new Event('mousedown'));
+            }
+            break;
+          case '=': // Adelantar
+            if (!isForwarding) { // Evitar múltiples activaciones
+              isForwarding = true;
+              forwardBtn.dispatchEvent(new Event('mousedown'));
+            }
+            break;
+          case ' ': // Play/Pausa
+            event.preventDefault();
+            playPauseBtn.click();
+            document.activeElement.blur();
+            break;
+          default:
+            break;
+        }
+      });
+      document.addEventListener('keyup', (event) => {
+        switch (event.key) {
+          case '-':
+            if (isRewinding) {
+              isRewinding = false;
+              rewindBtn.dispatchEvent(new Event('mouseup'));
+            }
+            break;
+          case '=':
+            if (isForwarding) {
+              isForwarding = false;
+              forwardBtn.dispatchEvent(new Event('mouseup'));
+            }
+            break;
+          default:
+            break;
+        }
+      });
+    }
+
+    function formatTime(seconds) {
+      if (!seconds) return "0:00";
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.floor(seconds % 60);
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    // Desactivar selección y menú contextual solo en los botones principales en móvil
+    function disableContextMenuAndSelection(selector) {
+      document.querySelectorAll(selector).forEach(btn => {
+        btn.addEventListener('contextmenu', e => e.preventDefault());
+      });
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      disableContextMenuAndSelection('#playPause, #rewind, #forward');
+    });
+
+    // Obtener los parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    
+    // Configurar el botón de retorno
+    const backButton = document.getElementById('backButton');
+    
+    // Función para detectar iOS
+    function isIOS() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    // Función para detectar modo app
+    function isInStandaloneMode() {
+      return (window.navigator.standalone === true) || // iOS Safari
+             (window.matchMedia('(display-mode: standalone)').matches) || // Android Chrome
+             (window.matchMedia('(display-mode: fullscreen)').matches);
+    }
+
+    backButton.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevenir comportamiento por defecto
+      
+      const targetUrl = `index.html?song=${songId}`;
+      
+      if (isIOS() && isInStandaloneMode()) {
+        // Para iOS en modo app, usar una redirección con timeout
+        document.location.href = targetUrl;
+        setTimeout(() => {
+          window.location.replace(targetUrl);
+        }, 100);
+      } else if (isInStandaloneMode()) {
+        // Para otros dispositivos en modo app
+        window.location.replace(targetUrl);
+      } else {
+        // Navegación normal
+        window.location.href = targetUrl;
+      }
+    });
+
+    // Función para forzar el modo fullscreen
+    function forceFullscreen() {
+      if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      }
+      // Forzar reflow para iOS
+      document.body.style.display = 'none';
+      document.body.offsetHeight; // Force reflow
+      document.body.style.display = '';
+      // Scroll al top
+      window.scrollTo(0, 0);
+    }
+
+    // Prevenir comportamientos no deseados
+    document.addEventListener('touchmove', function(e) {
+      if (e.target.closest('.seekbar-touch-area')) return;
+      if (e.target.closest('.info')) return;
+    }, { passive: true });
   </script>
 </body>
 </html>
+

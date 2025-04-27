@@ -3,262 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <title>Play</title>
+
+  <!-- Configuración para instalar como app en iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Play">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Escala responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Íconos de la app -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <style>
-    html, body {
-      margin: 0; padding: 0; overflow: hidden; height: 100%;
-      background-color: #363739; font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif;
-    }
-    .container { display: flex; flex-direction: row; height: 100vh; overflow: hidden; }
-    .sidebar {
-      width: 100px; display: flex; flex-direction: column; align-items: stretch;
-      justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; gap: 0;
-      margin-top: calc(-1 * env(safe-area-inset-top));
-    }
-    .sidebar .miniatura {
-      margin: 0; padding: 0; line-height: 0; vertical-align: top; box-sizing: border-box;
-      position: relative; width: 100px; aspect-ratio: 1/1; font-size: 0;
-      background: #555; background-size: cover; background-position: center;
-      border: none; color: white; cursor: pointer;
-    }
-    .sidebar .miniatura::after {
-      content: attr(data-label); position: absolute; bottom: 4px; right: 4px;
-      font-size: 14px; background-color: black; color: white; padding: 2px 6px;
-      border-radius: 4px; line-height: 1; z-index: 2;
-    }
-    @media (hover: hover) { .sidebar .miniatura:hover { filter: brightness(1.3); } }
-    .main {
-      flex-grow: 1; height: 100vh; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; gap: 20px; position: relative; overflow: hidden;
-    }
-    .caratula {
-      width: 200px; height: 200px; border-radius: 30px;
-      background-repeat: no-repeat; background-position: center; background-size: cover;
-      background-color: red;
-    }
-    .info { width: 200px; text-align: left; }
-    .nombreCancion {
-      font-size: 1.25rem; font-weight: 600; color: #FFFFFF;
-    }
-    .artista {
-      font-size: 0.9rem; font-weight: 400; color: #B3B3B3;
-    }
-    #seekBar { width: 80%; }
-    #playPause {
-      width: 150px; height: 150px; border: none; border-radius: 50%;
-      background: white; color: black; font-size: 64px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    #playPause:hover { background: #eee; }
-    .icon { width: 0; height: 0; border-style: solid; }
-    .play-icon { border-width: 20px 0 20px 35px; border-color: transparent transparent transparent black; }
-    .pause-icon { display: flex; gap: 10px; }
-    .pause-icon div { width: 10px; height: 40px; background: black; }
-    #guitarraBtn {
-      width: 50px; height: 50px; position: absolute;
-      top: calc(50% - 310px); left: 50%; transform: translateX(-50%);
-      z-index: 2; display: none; align-items: center; justify-content: center;
-      border: none; border-radius: 50%; background: white;
-      box-shadow: 0 0 10px gray; cursor: pointer;
-    }
-    #guitarraBtn.active { box-shadow: 0 0 10px red !important; }
-    #detailsBtn {
-      position: absolute; top: 20px; right: 20px;
-      padding: 8px 12px; font-size: 1rem; cursor: pointer;
-      background: white; border: none; border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    .version {
-      position: absolute; bottom: 10px; right: 20px;
-      font-size: 16px; color: #999;
-    }
-  </style>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
+  <!-- ===========================  ESTRUCTURA HTML  =========================== -->
   <div class="container">
-    <div class="sidebar"><div id="miniaturasContainer"></div></div>
+    <!-- Barra lateral -->
+    <div class="sidebar">
+      <div id="miniaturasContainer"></div>
+    </div>
+
+    <!-- Sección principal -->
     <div class="main">
-      <button id="detailsBtn">Detalles</button>
       <button id="guitarraBtn"><span style="font-size:28px;">🎸</span></button>
       <div class="caratula" id="cover"></div>
       <div class="info">
         <div class="nombreCancion" id="nombreCancion"></div>
-        <div class="artista" id="artista"></div>
+        <div class="artista"        id="artista"></div>
       </div>
       <input type="range" id="seekBar" value="0" min="0" step="1">
       <button id="playPause"><div id="icon" class="icon play-icon"></div></button>
     </div>
   </div>
+
+  <!-- Botón de detalles -->
+  <a id="detailsArrow" class="details-arrow" title="Ver detalles">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 4l8 8-8 8" stroke="#4a9eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+
+  <!-- Etiqueta de versión -->
   <div class="version" id="version-btn" style="cursor: pointer; user-select: none;">
-    Versión 4.8
+    Versión 4.9
   </div>
-  <div id="spinner" style="display:none;position:fixed;bottom:10px;right:100px;width:20px;height:20px;border:4px solid #f3f3f3;border-top:4px solid #555;border-radius:50%;animation:spin 1s linear infinite;z-index:1000;"></div>
-  <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
-  <script>
-    let currentIndex = 1;
-    document.getElementById('version-btn').addEventListener('click', function(){
-      const spinner=document.getElementById('spinner'); spinner.style.display='block';
-      setTimeout(()=>{window.location.reload(true);},1000);
-    });
-  </script>
+  <div id="spinner"></div>
+
+  <!-- ===========================  AUDIOS OCULTOS  =========================== -->
   <audio id="audio"></audio>
   <audio id="audioAlt" style="display:none;"></audio>
-  <script>
-    const totalCovers = 27;
-    const coversConGuitarra = [9,10];
-    const metadatos = {
-      1:{nombre:'Día de Enero',artista:'Shakira'},
-      2:{nombre:'Hey Jude',artista:'Beatles'},
-      3:{nombre:'The Scientist',artista:'Coldplay'},
-      4:{nombre:'Shake it Off',artista:'Taylor Swift'},
-      5:{nombre:'Main Theme',artista:'Gravity Falls'},
-      6:{nombre:'Riptide',artista:'Vance Joy'},
-      7:{nombre:'El Camión de Samu',artista:'Hermanos'},
-      8:{nombre:'Capaz',artista:'Alleh & Yorghaki'},
-      9:{nombre:'Drive',artista:'Incubus'},
-      10:{nombre:"Back to december (Taylor's Version)",artista:'Taylor Swift'},
-      11:{nombre:'Gravity Falls',artista:'Pedro y Clemente'},
-      12:{nombre:'Burrito Sabanero',artista:'Borja y Max'},
-      13:{nombre:"I'm still standing",artista:'Clemente'},
-      14:{nombre:'Diente blanco, No te vayas!',artista:'Clemente y Celeste'},
-      15:{nombre:"Don't Stop Believin'",artista:'Journey'},
-      16:{nombre:"All of me",artista:'John Legend'},
-      17:{nombre:"Somewhere Only we Know",artista:'Keane'},
-      18:{nombre:"Someone like You",artista:'Adele'},
-      19:{nombre:"Podré ir a Europa",artista:'Martín y Emma'},
-      20:{nombre:"Muerte en Hawaii",artista:'Calle 13'},
-      21:{nombre:"Popó, Así me llamo yo",artista:"Martín y Emma"},
-      22:{nombre:"Osito Gominola",artista:"Samuel"},
-      23:{nombre:"Ritmo Sideral",artista:"Clemente"},
-      24:{nombre:"Pepita",artista:"Samuel"},
-      25:{nombre:"De Bebé a Niño",artista:"Emma"},
-      26:{nombre:"Steve's Lava Chicken",artista:"Minecraft"}, 
-      27:{nombre:"In the Stars",artista:"Benson Boone"}
-    };
-    const miniaturasContainer = document.getElementById('miniaturasContainer');
-    const nombreCancionEl = document.getElementById('nombreCancion');
-    const artistaEl = document.getElementById('artista');
-    const audio = document.getElementById('audio');
-    const audioAlt = document.getElementById('audioAlt');
-    const guitarraBtn = document.getElementById('guitarraBtn');
-    const playPauseBtn = document.getElementById('playPause');
-    const icon = document.getElementById('icon');
-    const cover = document.getElementById('cover');
-    const seekBar = document.getElementById('seekBar');
 
-    function selectAudio(filename, coverImage, metadata) {
-      if (currentIndex && !audio.paused) audio.pause();
-      audio.src = filename;
-      cover.style.backgroundImage = `url('${coverImage}')`;
+  <!-- ==============================  SCRIPTS  =============================== -->
+  <script>
+    // Control del spinner al hacer clic en la versión
+    document.getElementById('version-btn').addEventListener('click', function() {
+      const spinner = document.getElementById('spinner');
+      spinner.style.display = 'block';
+
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 1000);
+    });
+
+    /* --------------------------------------------------------------------------
+       VARIABLES Y CONSTANTES GLOBALES
+    -------------------------------------------------------------------------- */
+    const totalCovers = 61;               // Total de carátulas
+    const coversConGuitarra = [9, 10];    // Índices que poseen audio sin guitarra
+
+    // Variables de carpetas
+    const folders = {
+      1: 'songs',   // Audios
+      2: 'covers'   // Miniaturas
+    };
+
+    // Metadatos de canciones (nombre y artista)
+    const metadatos = {
+        1:  {nombre:'Día de Enero',                         artista:'Shakira'},
+        2:  {nombre:'Hey Jude',                             artista:'Beatles'},
+        3:  {nombre:'The Scientist',                        artista:'Coldplay'},
+        4:  {nombre:'Shake it Off',                         artista:'Taylor Swift'},
+        5:  {nombre:'Main Theme',                           artista:'Gravity Falls'},
+        6:  {nombre:'Riptide',                              artista:'Vance Joy'},
+        7:  {nombre:'El Camión de Samu',                    artista:'Hermanos'},
+        8:  {nombre:'Capaz',                                artista:'Alleh & Yorghaki'},
+        9:  {nombre:'Drive',                                artista:'Incubus'},
+        10: {nombre:"Back to december (Taylor's Version)",  artista:'Taylor Swift'},
+        11: {nombre:'Gravity Falls',                        artista:'Pedro y Clemente'},
+        12: {nombre:'Burrito Sabanero',                     artista:'Borja y Max'},
+        13: {nombre:"I'm still standing",                   artista:'Clemente'},
+        14: {nombre:'Diente blanco, No te vayas!',          artista:'Clemente y Celeste'},
+        15: {nombre:"Don't Stop Believin'",                 artista:'Journey'},
+        16: {nombre:"All of me",                            artista:'John Legend'},
+        17: {nombre:"Somewhere Only we Know",               artista:'Keane'},
+        18: {nombre:"Someone like You",                     artista:'Adele'},
+        19: {nombre:"Podré ir a Europa",                    artista:'Martín y Emma'},
+        20: {nombre:"Muerte en Hawaii",                     artista:'Calle 13'},
+        21: {nombre:"Popó, Así me llamo yo",                artista:"Martín y Emma"},
+        22: {nombre:"Osito Gominola",                       artista:"Samuel"},
+        23: {nombre:"Ritmo Sideral",                        artista:"Clemente"},
+        24: {nombre:"Pepita",                               artista:"Samuel"},
+        25: {nombre:"De Bebé a Niño",                       artista:"Emma"},
+        26: {nombre:"Steve's Lava Chicken",                 artista:"Minecraft"},
+        27: {nombre:"In the Stars",                         artista:"Benson Boone"},
+        28: {nombre:"Something just like This",             artista:"The Chainsmokers & Coldplay"},
+        29: {nombre:"Zorba",                                artista:"El Griego"},      
+        30: {nombre:"Chiu Chiu",                       artista:"Borja"},
+        31: {nombre:"Cuando sea mayor",                artista:"Josefa"},
+        32: {nombre:"Danke Danke",                     artista:"Emma"},
+        33: {nombre:"Do re mi fa sol",                 artista:"Bernardo"},
+        34: {nombre:"El colegio es para aprender",     artista:"Emma"},
+        35: {nombre:"Enchanted",                       artista:"Clarita"},
+        36: {nombre:"Estrellita",                      artista:"Rafael"},
+        37: {nombre:"Gallo Pelado",                    artista:"Borja"},
+        38: {nombre:"Gohstbuster",                     artista:"Clemente"},
+        39: {nombre:"Jurassic Park",                   artista:"Clemente"},
+        40: {nombre:"La jardinera",                    artista:"Lucas"},
+        41: {nombre:"La Maldita Roberta",              artista:"Martín"},
+        42: {nombre:"Long Live",                       artista:"Clarita"},
+        43: {nombre:"Milo el doctor",                  artista:"Pedro"},
+        44: {nombre:"Piratas del caribe",              artista:"Raimundo"},
+        45: {nombre:"Polka de los perros",             artista:"Clemente"},
+        46: {nombre:"Schwarz und weiss",               artista:"Martín"},
+        47: {nombre:"Sky full of stars",               artista:"Josefa"},
+        48: {nombre:"Solsito porfavor",                artista:"Emma"},
+        49: {nombre:"Star Wars",                       artista:"Lucas"},
+        50: {nombre:"Thunderstruck",                   artista:"Lucas"},
+        51: {nombre:"Yo nunca vi televisión",          artista:"Martín"},
+        52: {nombre:"Yo vendo unos ojos negros",       artista:"Eduardo"},
+        53: {nombre:"Jurassic Park",                   artista:"Agustín"},
+        54: {nombre:"Los monitos",                     artista:"Josefa y Emilio"},
+        55: {nombre:"Perdonarte para que",             artista:"Clarita"},
+        56: {nombre:"Rodolfo el Reno",                 artista:"Josefa"},
+        57: {nombre:"With you",                        artista:"Clarita"},
+        58: {nombre:"El mas pequeño",                  artista:"Samuel"},
+        59: {nombre:"I Don't Care",                    artista:"Max"},
+        60: {nombre:"Bundle of Joy",                   artista:"Florencia"},
+        61: {nombre:"Himno a la Alegría",              artista:"Grupo Musical"}
+    };
+
+    /* --------------------------------------------------------------------------
+       ELEMENTOS DEL DOM
+    -------------------------------------------------------------------------- */
+    const miniaturasContainer = document.getElementById('miniaturasContainer');
+    const nombreCancionEl     = document.getElementById('nombreCancion');
+    const artistaEl           = document.getElementById('artista');
+    const audio               = document.getElementById('audio');
+    const audioAlt            = document.getElementById('audioAlt');
+    const guitarraBtn         = document.getElementById('guitarraBtn');
+    const playPauseBtn        = document.getElementById('playPause');
+    const icon                = document.getElementById('icon');
+    const cover               = document.getElementById('cover');
+    const seekBar             = document.getElementById('seekBar');
+
+    /* Estado de audio actual */
+    let currentAudio = audio;
+    let isAlt        = false;             // ¿Estamos usando audio alternativo?
+
+    /* --------------------------------------------------------------------------
+       FUNCIONES PRINCIPALES
+    -------------------------------------------------------------------------- */
+    function selectAudio (filename, coverImage, metadata) {
+      if (currentAudio && !currentAudio.paused) currentAudio.pause();
+
+      audio.src = `${folders[1]}/${filename}`;
+      cover.style.backgroundImage = `url('${folders[2]}/${coverImage}')`;
+
       nombreCancionEl.textContent = metadata.nombre;
-      artistaEl.textContent = metadata.artista;
-      localStorage.setItem('selectedAudio', filename);
-      localStorage.setItem('selectedCover', coverImage);
-      localStorage.setItem('selectedNombre', metadata.nombre);
+      artistaEl.textContent       = metadata.artista;
+
+      localStorage.setItem('selectedAudio',   `${folders[1]}/${filename}`);
+      localStorage.setItem('selectedCover',   `${folders[2]}/${coverImage}`);
+      localStorage.setItem('selectedNombre',  metadata.nombre);
       localStorage.setItem('selectedArtista', metadata.artista);
+
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: metadata.nombre,
+          title:  metadata.nombre,
           artist: metadata.artista,
-          artwork:[{src:coverImage,sizes:'512x512',type:'image/jpeg'}]
+          artwork:[{ src: `${folders[2]}/${coverImage}`, sizes:'512x512', type:'image/jpeg' }]
         });
-        navigator.mediaSession.setActionHandler('play',() => { audio.play(); setIcon('pause'); });
-        navigator.mediaSession.setActionHandler('pause',() => { audio.pause(); setIcon('play'); });
+        navigator.mediaSession.setActionHandler('play',  () => { currentAudio.play();  setIcon('pause'); });
+        navigator.mediaSession.setActionHandler('pause', () => { currentAudio.pause(); setIcon('play');  });
       }
-      const coverIndex = parseInt(filename.match(/(\d+)\.mp3/)[1],10);
-      currentIndex = coverIndex;
+
+      const coverIndex = parseInt(filename.match(/(\d+)\.mp3/)[1], 10);
       if (coversConGuitarra.includes(coverIndex)) {
         guitarraBtn.style.display = 'flex';
-        guitarraBtn.disabled = true;
-        guitarraBtn.style.filter = 'grayscale(100%)';
+        guitarraBtn.disabled      = true;
+        guitarraBtn.style.filter  = 'grayscale(100%)';
         guitarraBtn.style.opacity = '0.6';
         guitarraBtn.classList.remove('active');
-        audioAlt.src = filename.replace('.mp3','_sg.mp3');
+
+        audioAlt.src = `${folders[1]}/` + filename.replace('.mp3','_sg.mp3');
         audioAlt.preload = 'auto';
         audioAlt.load();
-        audioAlt.addEventListener('canplaythrough',() => {
-          guitarraBtn.disabled=false;
-          guitarraBtn.style.filter='none';
-          guitarraBtn.style.opacity='1';
-        },{once:true});
+        audioAlt.addEventListener('canplaythrough', () => {
+          guitarraBtn.disabled     = false;
+          guitarraBtn.style.filter = 'none';
+          guitarraBtn.style.opacity= '1';
+        }, {once:true});
       } else {
         guitarraBtn.style.display = 'none';
       }
-      audio.load();
+
+      currentAudio = audio;
+      currentAudio.load();
       seekBar.value = 0;
-      seekBar.max = 1;
+      seekBar.max   = 1;
       setIcon('play');
     }
 
-    function togglePlay() {
-      if (!audio.src) return;
-      if (audio.paused) { audio.play(); setIcon('pause'); }
-      else { audio.pause(); setIcon('play'); }
+    function togglePlay () {
+      if (!currentAudio.src) return;
+      if (currentAudio.paused) {
+        const playPromise = currentAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error("Error playing audio:", error);
+          });
+        }
+      } else {
+        currentAudio.pause();
+        setIcon('play');
+      }
     }
 
-    function setIcon(state) {
-      if (state==='play') { icon.className='icon play-icon'; icon.innerHTML=''; }
-      else { icon.className='pause-icon'; icon.innerHTML='<div></div><div></div>'; }
+    function setIcon (state) {
+      if (state === 'play') {
+        icon.className = 'icon play-icon';
+        icon.innerHTML = '';
+      } else {
+        icon.className = 'pause-icon';
+        icon.innerHTML = '<div></div><div></div>';
+      }
     }
 
     [audio, audioAlt].forEach(aud => {
       aud.addEventListener('timeupdate', e => {
         if (!isNaN(e.target.duration)) {
-          seekBar.max = Math.floor(e.target.duration);
+          seekBar.max   = Math.floor(e.target.duration);
           seekBar.value = Math.floor(e.target.currentTime);
         }
       });
       aud.addEventListener('ended', () => setIcon('play'));
+      aud.addEventListener('playing', () => setIcon('pause'));
     });
 
-    seekBar.addEventListener('input', () => { audio.currentTime = seekBar.value; });
+    seekBar.addEventListener('input', () => {
+      currentAudio.currentTime = seekBar.value;
+    });
+
     playPauseBtn.addEventListener('click', togglePlay);
-    guitarraBtn.addEventListener('click', () => {
-      const time = audio.currentTime;
-      const playing = !audio.paused;
-      guitarraBtn.classList.toggle('active');
-      const isAlt = guitarraBtn.classList.contains('active');
-      localStorage.setItem('isAlt', isAlt);
-      const prevSrc = isAlt ? audioAlt.src : audio.src;
-      audio.pause();
-      audio.src = prevSrc;
-      audio.currentTime = time;
-      if (playing) audio.play();
-    });
 
-    document.getElementById('detailsBtn').addEventListener('click', () => {
-      window.location.href = `details.html?song=${currentIndex}`;
+    guitarraBtn.addEventListener('click', () => {
+      const savedAudio = localStorage.getItem('selectedAudio');
+      const coverIndex = parseInt(savedAudio.match(/(\d+)\.mp3/)[1], 10);
+      if (!coversConGuitarra.includes(coverIndex)) return;
+
+      const time    = currentAudio.currentTime;
+      const playing = !currentAudio.paused;
+
+      guitarraBtn.classList.toggle('active');
+      isAlt = guitarraBtn.classList.contains('active');
+      localStorage.setItem('isAlt', isAlt.toString());
+
+      currentAudio.pause();
+      currentAudio = isAlt ? audioAlt : audio;
+      currentAudio.currentTime = time;
+      if (playing) currentAudio.play();
     });
 
     window.addEventListener('DOMContentLoaded', () => {
-      const savedAudio = localStorage.getItem('selectedAudio') || '1.mp3';
-      const savedCover = localStorage.getItem('selectedCover') || 'cover1.jpeg';
-      const savedNombre = localStorage.getItem('selectedNombre') || metadatos[1].nombre;
+      const savedAudio   = localStorage.getItem('selectedAudio')   || `${folders[1]}/1.mp3`;
+      const savedCover   = localStorage.getItem('selectedCover')   || `${folders[2]}/cover1.jpeg`;
+      const savedNombre  = localStorage.getItem('selectedNombre')  || metadatos[1].nombre;
       const savedArtista = localStorage.getItem('selectedArtista') || metadatos[1].artista;
-      const savedIsAlt = localStorage.getItem('isAlt') === 'true';
+      const savedIsAlt   = localStorage.getItem('isAlt') === 'true';
+
       cover.style.backgroundImage = `url('${savedCover}')`;
       nombreCancionEl.textContent = savedNombre;
-      artistaEl.textContent = savedArtista;
+      artistaEl.textContent       = savedArtista;
       audio.src = savedAudio;
-      const initialIndex = parseInt(savedAudio.match(/(\d+)\.mp3/)[1],10);
-      currentIndex = initialIndex;
-      if (coversConGuitarra.includes(initialIndex) && savedIsAlt) {
+
+      const coverIndex = parseInt(savedAudio.match(/(\d+)\.mp3/)[1], 10);
+      guitarraBtn.style.display = coversConGuitarra.includes(coverIndex) ? 'flex' : 'none';
+
+      if (coversConGuitarra.includes(coverIndex) && savedIsAlt) {
+        isAlt        = true;
         guitarraBtn.classList.add('active');
+        currentAudio = audioAlt;
+      } else {
+        isAlt        = false;
+        currentAudio = audio;
       }
+
+      if (coversConGuitarra.includes(coverIndex)) {
+        audioAlt.src = savedAudio.replace('.mp3', '_sg.mp3'); // Solo si tiene versión sin guitarra
+        audioAlt.preload = 'auto';
+        audioAlt.load();
+      }
+
+      audio.addEventListener('loadedmetadata', () => setIcon('play'));
+
+      /* Generar botones de miniaturas en orden inverso */
       for (let i = totalCovers; i >= 1; i--) {
         const btn = document.createElement('button');
         btn.className = 'miniatura';
         btn.setAttribute('data-label', i);
-        btn.style.backgroundImage = `url('cover${i}.jpeg')`;
+        btn.style.backgroundImage = `url('${folders[2]}/cover${i}.jpeg')`;
         btn.onclick = () => selectAudio(`${i}.mp3`, `cover${i}.jpeg`, metadatos[i]);
         miniaturasContainer.appendChild(btn);
       }
+
+      // Mostrar el botón de detalles
+      const detailsArrow = document.getElementById('detailsArrow');
+      detailsArrow.classList.add('show');
+
+      // Manejar clic en el botón de detalles
+      detailsArrow.addEventListener('click', () => {
+        // Obtener el ID de la canción actual del src del audio
+        const currentSongId = currentAudio.src.split('/').pop().replace('.mp3', '').replace('_sg', '');
+        const currentTime = currentAudio.currentTime;
+        
+        // Construir la URL de la carátula basada en el ID de la canción
+        const currentCover = `${folders[2]}/cover${currentSongId}.jpeg`;
+        
+        // Construir la URL con los parámetros necesarios
+        const params = new URLSearchParams({
+          song: currentSongId,
+          cover: currentCover,
+          title: nombreCancionEl.textContent,
+          audio: `${folders[1]}/${currentSongId}.mp3`,
+          time: currentTime
+        });
+        
+        window.location.href = `details.html?${params.toString()}`;
+      });
     });
   </script>
 </body>
