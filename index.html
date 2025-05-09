@@ -78,6 +78,7 @@
     }
     /* Estilos para el slider (input range) */
     #seekBar {
+      appearance: none;
       -webkit-appearance: none;
       width: 80%; /* Ancho reducido al 80% */
       height: 6px;
@@ -211,7 +212,7 @@
     /* --------------------------------------------------------------------------
        VARIABLES Y CONSTANTES GLOBALES
     -------------------------------------------------------------------------- */
-    const totalCovers = 72;               // Total de carátulas
+    let totalCovers = 0;                 // Total de carátulas (se cargará dinámicamente)
     const coversConGuitarra = [9, 10, 62];    // Índices que poseen audio sin guitarra
 
     // Variables de carpetas
@@ -220,83 +221,41 @@
       2: 'covers'   // Miniaturas
     };
 
-    // Metadatos de canciones (nombre y artista)
-    const metadatos = {
-        1:  {nombre:'Día de Enero',                         artista:'Shakira'},
-        2:  {nombre:'Hey Jude',                             artista:'Beatles'},
-        3:  {nombre:'The Scientist',                        artista:'Coldplay'},
-        4:  {nombre:'Shake it Off',                         artista:'Taylor Swift'},
-        5:  {nombre:'Main Theme',                           artista:'Gravity Falls'},
-        6:  {nombre:'Riptide',                              artista:'Vance Joy'},
-        7:  {nombre:'El Camión de Samu',                    artista:'Hermanos'},
-        8:  {nombre:'Capaz',                                artista:'Alleh & Yorghaki'},
-        9:  {nombre:'Drive',                                artista:'Incubus'},
-        10: {nombre:"Back to december (Taylor's Version)",  artista:'Taylor Swift'},
-        11: {nombre:'Gravity Falls',                        artista:'Pedro y Clemente'},
-        12: {nombre:'Burrito Sabanero',                     artista:'Borja y Max'},
-        13: {nombre:"I'm still standing",                   artista:'Clemente'},
-        14: {nombre:'Diente blanco, No te vayas!',          artista:'Clemente y Celeste'},
-        15: {nombre:"Don't Stop Believin'",                 artista:'Journey'},
-        16: {nombre:"All of me",                            artista:'John Legend'},
-        17: {nombre:"Somewhere Only we Know",               artista:'Keane'},
-        18: {nombre:"Someone like You",                     artista:'Adele'},
-        19: {nombre:"Podré ir a Europa",                    artista:'Martín y Emma'},
-        20: {nombre:"Muerte en Hawaii",                     artista:'Calle 13'},
-        21: {nombre:"Popó, Así me llamo yo",                artista:"Martín y Emma"},
-        22: {nombre:"Osito Gominola",                       artista:"Samuel"},
-        23: {nombre:"Ritmo Sideral",                        artista:"Clemente"},
-        24: {nombre:"Pepita",                               artista:"Samuel"},
-        25: {nombre:"De Bebé a Niño",                       artista:"Emma"},
-        26: {nombre:"Steve's Lava Chicken",                 artista:"Minecraft"},
-        27: {nombre:"In the Stars",                         artista:"Benson Boone"},
-        28: {nombre:"Something just like This",             artista:"The Chainsmokers & Coldplay"},
-        29: {nombre:"Zorba",                                artista:"El Griego"},      
-        30: {nombre:"Chiu Chiu",                       artista:"Borja"},
-        31: {nombre:"Cuando sea mayor",                artista:"Josefa"},
-        32: {nombre:"Danke Danke",                     artista:"Emma"},
-        33: {nombre:"Do re mi fa sol",                 artista:"Bernardo"},
-        34: {nombre:"El colegio es para aprender",     artista:"Emma"},
-        35: {nombre:"Enchanted",                       artista:"Clarita"},
-        36: {nombre:"Estrellita",                      artista:"Rafael"},
-        37: {nombre:"Gallo Pelado",                    artista:"Borja"},
-        38: {nombre:"Gohstbuster",                     artista:"Clemente"},
-        39: {nombre:"Jurassic Park",                   artista:"Clemente"},
-        40: {nombre:"La jardinera",                    artista:"Lucas"},
-        41: {nombre:"La Maldita Roberta",              artista:"Martín"},
-        42: {nombre:"Long Live",                       artista:"Clarita"},
-        43: {nombre:"Milo el doctor",                  artista:"Pedro"},
-        44: {nombre:"Piratas del caribe",              artista:"Raimundo"},
-        45: {nombre:"Polka de los perros",             artista:"Clemente"},
-        46: {nombre:"Schwarz und weiss",               artista:"Martín"},
-        47: {nombre:"Sky full of stars",               artista:"Josefa"},
-        48: {nombre:"Solsito porfavor",                artista:"Emma"},
-        49: {nombre:"Star Wars",                       artista:"Lucas"},
-        50: {nombre:"Thunderstruck",                   artista:"Lucas"},
-        51: {nombre:"Yo nunca vi televisión",          artista:"Martín"},
-        52: {nombre:"Yo vendo unos ojos negros",       artista:"Eduardo"},
-        53: {nombre:"Jurassic Park",                   artista:"Agustín"},
-        54: {nombre:"Los monitos",                     artista:"Josefa y Emilio"},
-        55: {nombre:"Perdonarte para que",             artista:"Clarita"},
-        56: {nombre:"Rodolfo el Reno",                 artista:"Josefa"},
-        57: {nombre:"With you",                        artista:"Clarita"},
-        58: {nombre:"El mas pequeño",                  artista:"Samuel"},
-        59: {nombre:"I Don't Care",                    artista:"Max"},
-        60: {nombre:"Bundle of Joy",                   artista:"Florencia"},
-        61: {nombre:"Himno a la Alegría",              artista:"Grupo Musical"},
-        62: {nombre:"Message in a Battle",             artista:"The Police"},
-        63: {nombre:"Faded",                           artista:"Alan Walker"},
-        64: {nombre:"Theme Song",                      artista:"Piratas del Caribe"},
-        65: {nombre:"Maguito Explosivo",               artista:"31 Minutos"},
-        66: {nombre:"Panamericana",                    artista:"Max Segers"},
-        67: {nombre:"Rin del Angelito",                artista:"Violeta Parra"},
-        68: {nombre:"Main Theme",                      artista:"Mario Bross"},
-        69: {nombre:"Hey Jude",                        artista:"Patricia y Pedro"},
-        70: {nombre:"El Cigarrito",                    artista:"Juanita y Juan Pablo"},
-        71: {nombre:"Jasmine Flower",                  artista:"Folklore Chino"},
-        72: {nombre:"Llueve sobre la ciudad",          artista:"Los Bunkers"},
-        
-        
-    };
+    // Metadatos de canciones (se cargará dinámicamente desde covers.json)
+    let metadatos = {};
+
+    /* --------------------------------------------------------------------------
+       CARGAR METADATOS DESDE covers.json
+    -------------------------------------------------------------------------- */
+    async function cargarMetadatos() {
+      try {
+        const response = await fetch('covers.json');
+        const data = await response.json();
+        totalCovers = data.totalCovers;
+        metadatos = data.covers.reduce((acc, cover) => {
+          acc[cover.id] = { nombre: cover.nombre, artista: cover.artista };
+          return acc;
+        }, {});
+
+        generarMiniaturas();
+      } catch (error) {
+        console.error('Error al cargar los metadatos:', error);
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       GENERAR MINIATURAS DINÁMICAMENTE
+    -------------------------------------------------------------------------- */
+    function generarMiniaturas() {
+      for (let i = totalCovers; i >= 1; i--) {
+        const btn = document.createElement('button');
+        btn.className = 'miniatura';
+        btn.setAttribute('data-label', i);
+        btn.style.backgroundImage = `url('${folders[2]}/cover${i}.jpeg')`;
+        btn.onclick = () => selectAudio(`${i}.mp3`, `cover${i}.jpeg`, metadatos[i]);
+        miniaturasContainer.appendChild(btn);
+      }
+    }
 
     /* --------------------------------------------------------------------------
        ELEMENTOS DEL DOM
@@ -435,10 +394,12 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      cargarMetadatos();
+
       const savedAudio   = localStorage.getItem('selectedAudio')   || `${folders[1]}/1.mp3`;
       const savedCover   = localStorage.getItem('selectedCover')   || `${folders[2]}/cover1.jpeg`;
-      const savedNombre  = localStorage.getItem('selectedNombre')  || metadatos[1].nombre;
-      const savedArtista = localStorage.getItem('selectedArtista') || metadatos[1].artista;
+      const savedNombre  = localStorage.getItem('selectedNombre')  || '';
+      const savedArtista = localStorage.getItem('selectedArtista') || '';
       const savedIsAlt   = localStorage.getItem('isAlt') === 'true';
 
       cover.style.backgroundImage = `url('${savedCover}')`;
@@ -476,30 +437,16 @@
         }
       });
 
-      /* Generar botones de miniaturas en orden inverso */
-      for (let i = totalCovers; i >= 1; i--) {
-        const btn = document.createElement('button');
-        btn.className = 'miniatura';
-        btn.setAttribute('data-label', i);
-        btn.style.backgroundImage = `url('${folders[2]}/cover${i}.jpeg')`;
-        btn.onclick = () => selectAudio(`${i}.mp3`, `cover${i}.jpeg`, metadatos[i]);
-        miniaturasContainer.appendChild(btn);
-      }
-
-      // Mostrar el botón de detalles
+      /* Mostrar el botón de detalles */
       const detailsArrow = document.getElementById('detailsArrow');
       detailsArrow.classList.add('show');
 
-      // Manejar clic en el botón de detalles
+      /* Manejar clic en el botón de detalles */
       detailsArrow.addEventListener('click', () => {
-        // Obtener el ID de la canción actual del src del audio
         const currentSongId = currentAudio.src.split('/').pop().replace('.mp3', '').replace('_sg', '');
         const currentTime = currentAudio.currentTime;
-        
-        // Construir la URL de la carátula basada en el ID de la canción
         const currentCover = `${folders[2]}/cover${currentSongId}.jpeg`;
-        
-        // Construir la URL con los parámetros necesarios
+
         const params = new URLSearchParams({
           song: currentSongId,
           cover: currentCover,
@@ -507,11 +454,11 @@
           audio: `${folders[1]}/${currentSongId}.mp3`,
           time: currentTime
         });
-        
+
         window.location.href = `details.html?${params.toString()}`;
       });
 
-      // Añadir event listener para cambios de orientación
+      /* Añadir event listener para cambios de orientación */
       window.addEventListener('resize', function() {
         adjustThumbnailsLayout();
       });
@@ -521,20 +468,16 @@
         const miniaturasContainer = document.getElementById('miniaturasContainer');
         
         if (isPortrait) {
-          // Configuración para orientación vertical (9 miniaturas)
           miniaturasContainer.style.justifyContent = 'center';
           miniaturasContainer.style.gap = '0px';
         } else {
-          // Configuración para orientación horizontal (7 miniaturas)
           miniaturasContainer.style.justifyContent = 'flex-start';
           miniaturasContainer.style.gap = '0px';
         }
       }
 
-      // Llamar a la función al cargar la página para configurar el diseño inicial
       adjustThumbnailsLayout();
 
-      // Verificar si hay un tiempo de reproducción guardado (proveniente de details.html)
       const urlParams = new URLSearchParams(window.location.search);
       const savedTimeFromURL = urlParams.get('time');
       const savedTimeFromStorage = localStorage.getItem('audioCurrentTime');
@@ -543,7 +486,7 @@
       if (timeToSet) {
         const parsedTime = parseFloat(timeToSet);
         let attempts = 0;
-        const maxAttempts = 10; // Aumentamos el número de intentos
+        const maxAttempts = 10;
 
         const setAudioTime = () => {
           if (currentAudio.readyState >= HTMLMediaElement.HAVE_METADATA) {
@@ -553,14 +496,13 @@
             attempts++;
             if (attempts < maxAttempts) {
               console.log(`Intento ${attempts}: Audio no listo, reintentando...`);
-              setTimeout(setAudioTime, 300); // Reintentar después de 300ms
+              setTimeout(setAudioTime, 300);
             } else {
               console.error("No se pudo establecer el tiempo después de varios intentos.");
             }
           }
         };
 
-        // Escuchar eventos clave del audio
         const handleLoadedMetadata = () => {
           currentAudio.currentTime = parsedTime;
           currentAudio.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -572,13 +514,11 @@
 
         currentAudio.addEventListener('loadedmetadata', handleLoadedMetadata);
         currentAudio.addEventListener('canplay', handleCanPlay);
-        currentAudio.load(); // Forzar la recarga
+        currentAudio.load();
 
-        // Intentar establecer el tiempo inmediatamente
         setAudioTime();
       }
 
-      // Guardar el tiempo actual en localStorage al salir de la página
       window.addEventListener('beforeunload', () => {
         localStorage.setItem('audioCurrentTime', currentAudio.currentTime.toString());
       });
