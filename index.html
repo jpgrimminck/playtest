@@ -25,7 +25,137 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-touch-fullscreen" content="yes">
   <link rel="manifest" href="manifest.json">
-  
+
+  <style>
+    :root {
+      --sat: env(safe-area-inset-top);
+      --sab: env(safe-area-inset-bottom);
+      --sal: env(safe-area-inset-left);
+      --sar: env(safe-area-inset-right);
+    }
+    html {
+      height: -webkit-fill-available;
+    }
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      height: -webkit-fill-available;
+    }
+    .container {
+      display: flex;
+      height: 100%;
+      max-height: 100vh;
+      max-height: -webkit-fill-available;
+      padding-top: env(safe-area-inset-top);
+    }
+    .miniatura {
+      width: 100px;
+      height: 100px;
+      background-size: cover;
+      background-position: center;
+      border: none;
+      border-radius: 0px;
+      margin: 0px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .miniatura:hover {
+      transform: scale(1);
+    }
+    #miniaturasContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0px;
+      gap: 0px;
+    }
+    /* Estilos para el slider (input range) */
+    #seekBar {
+      -webkit-appearance: none;
+      width: 80%; /* Ancho reducido al 80% */
+      height: 6px;
+      background: #ccc;
+      outline: none;
+      border-radius: 3px;
+      margin: 10px auto; /* Centrado horizontal */
+      display: block; /* Asegura que el margin auto funcione */
+      pointer-events: none;
+    }
+
+    /* Thumb del slider (para Webkit: Chrome, Safari, Edge) */
+    #seekBar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;  /* Mantenemos el tamaño original */
+      height: 24px;
+      background: #4a9eff;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 0 10px transparent;  /* Área transparente alrededor */
+      margin-top: 0px;  /* Ajuste perfecto para el centro */
+      transition: transform 0.1s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Aumentamos el área de interacción con pseudo-elementos */
+    #seekBar::-webkit-slider-thumb::before {
+      content: '';
+      position: absolute;
+      width: 44px;  /* 24px + 20px extra */
+      height: 44px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: transparent;
+      border-radius: 50%;
+      pointer-events: all;
+    }
+
+    /* Thumb para Firefox */
+    #seekBar::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: #4a9eff;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* Thumb para IE/Edge */
+    #seekBar::-ms-thumb {
+      width: 24px;
+      height: 24px;
+      background: #4a9eff;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Mantenemos todos los eventos de interacción originales */
+    #seekBar::-webkit-slider-thumb {
+      pointer-events: all;
+    }
+
+    /* Efecto al interactuar con el thumb */
+    #seekBar::-webkit-slider-thumb:hover,
+    #seekBar::-moz-range-thumb:hover,
+    #seekBar::-ms-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .sidebar {
+      padding-top: 0px; /* Valor fijo en lugar de env(safe-area-inset-top) */
+    }
+  </style>
 </head>
 
 <body>
@@ -81,7 +211,7 @@
     /* --------------------------------------------------------------------------
        VARIABLES Y CONSTANTES GLOBALES
     -------------------------------------------------------------------------- */
-    const totalCovers = 68;               // Total de carátulas
+    const totalCovers = 72;               // Total de carátulas
     const coversConGuitarra = [9, 10, 62];    // Índices que poseen audio sin guitarra
 
     // Variables de carpetas
@@ -153,13 +283,19 @@
         59: {nombre:"I Don't Care",                    artista:"Max"},
         60: {nombre:"Bundle of Joy",                   artista:"Florencia"},
         61: {nombre:"Himno a la Alegría",              artista:"Grupo Musical"},
-        62: {nombre:"Message in a Bottle",             artista:"The Police"},
+        62: {nombre:"Message in a Battle",             artista:"The Police"},
         63: {nombre:"Faded",                           artista:"Alan Walker"},
         64: {nombre:"Theme Song",                      artista:"Piratas del Caribe"},
         65: {nombre:"Maguito Explosivo",               artista:"31 Minutos"},
         66: {nombre:"Panamericana",                    artista:"Max Segers"},
         67: {nombre:"Rin del Angelito",                artista:"Violeta Parra"},
         68: {nombre:"Main Theme",                      artista:"Mario Bross"},
+        69: {nombre:"Hey Jude",                        artista:"Patricia y Pedro"},
+        70: {nombre:"El Cigarrito",                    artista:"Juanita y Juan Pablo"},
+        71: {nombre:"Jasmine Flower",                  artista:"Folklore Chino"},
+        72: {nombre:"Llueve sobre la ciudad",          artista:"Los Bunkers"},
+        
+        
     };
 
     /* --------------------------------------------------------------------------
@@ -234,8 +370,12 @@
       setIcon('play');
     }
 
-    function togglePlay () {
+    function togglePlay() {
       if (!currentAudio.src) return;
+
+      // Sincronizar el tiempo del slider con el audio antes de reproducir
+      currentAudio.currentTime = parseFloat(seekBar.value);
+
       if (currentAudio.paused) {
         const playPromise = currentAudio.play();
         if (playPromise !== undefined) {
@@ -324,7 +464,17 @@
         audioAlt.load();
       }
 
-      audio.addEventListener('loadedmetadata', () => setIcon('play'));
+      audio.addEventListener('loadedmetadata', () => {
+        seekBar.max = currentAudio.duration;
+        seekBar.value = 0;
+        setIcon('play');
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        if (!isNaN(currentAudio.duration)) {
+          seekBar.value = currentAudio.currentTime;
+        }
+      });
 
       /* Generar botones de miniaturas en orden inverso */
       for (let i = totalCovers; i >= 1; i--) {
@@ -359,6 +509,78 @@
         });
         
         window.location.href = `details.html?${params.toString()}`;
+      });
+
+      // Añadir event listener para cambios de orientación
+      window.addEventListener('resize', function() {
+        adjustThumbnailsLayout();
+      });
+
+      function adjustThumbnailsLayout() {
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const miniaturasContainer = document.getElementById('miniaturasContainer');
+        
+        if (isPortrait) {
+          // Configuración para orientación vertical (9 miniaturas)
+          miniaturasContainer.style.justifyContent = 'center';
+          miniaturasContainer.style.gap = '0px';
+        } else {
+          // Configuración para orientación horizontal (7 miniaturas)
+          miniaturasContainer.style.justifyContent = 'flex-start';
+          miniaturasContainer.style.gap = '0px';
+        }
+      }
+
+      // Llamar a la función al cargar la página para configurar el diseño inicial
+      adjustThumbnailsLayout();
+
+      // Verificar si hay un tiempo de reproducción guardado (proveniente de details.html)
+      const urlParams = new URLSearchParams(window.location.search);
+      const savedTimeFromURL = urlParams.get('time');
+      const savedTimeFromStorage = localStorage.getItem('audioCurrentTime');
+      const timeToSet = savedTimeFromURL || savedTimeFromStorage;
+
+      if (timeToSet) {
+        const parsedTime = parseFloat(timeToSet);
+        let attempts = 0;
+        const maxAttempts = 10; // Aumentamos el número de intentos
+
+        const setAudioTime = () => {
+          if (currentAudio.readyState >= HTMLMediaElement.HAVE_METADATA) {
+            currentAudio.currentTime = parsedTime;
+            console.log(`Tiempo establecido: ${parsedTime} segundos.`);
+          } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+              console.log(`Intento ${attempts}: Audio no listo, reintentando...`);
+              setTimeout(setAudioTime, 300); // Reintentar después de 300ms
+            } else {
+              console.error("No se pudo establecer el tiempo después de varios intentos.");
+            }
+          }
+        };
+
+        // Escuchar eventos clave del audio
+        const handleLoadedMetadata = () => {
+          currentAudio.currentTime = parsedTime;
+          currentAudio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        };
+        const handleCanPlay = () => {
+          currentAudio.currentTime = parsedTime;
+          currentAudio.removeEventListener('canplay', handleCanPlay);
+        };
+
+        currentAudio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        currentAudio.addEventListener('canplay', handleCanPlay);
+        currentAudio.load(); // Forzar la recarga
+
+        // Intentar establecer el tiempo inmediatamente
+        setAudioTime();
+      }
+
+      // Guardar el tiempo actual en localStorage al salir de la página
+      window.addEventListener('beforeunload', () => {
+        localStorage.setItem('audioCurrentTime', currentAudio.currentTime.toString());
       });
     });
   </script>
