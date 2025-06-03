@@ -81,6 +81,6 @@
     {"id": 78, "nombre": "La media vuelta", "artista": "Juan Pablo", "tipo": "c"},
     {"id": 79, "nombre": "Back to december (Clara's version)", "artista": "Clarita", "tipo": "c"},
     {"id": 80, "nombre": "Minueto en Sol", "artista": "Martin", "tipo": "c"},
-    {"id": 81, "nombre": "Maguito Explosivo", "artista": "Clemnte y Pedro", "tipo": "c"}
+    {"id": 81, "nombre": "Maguito Explosivo", "artista": "Clemente y Pedro", "tipo": "c"}
   ]
 }
