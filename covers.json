@@ -1,5 +1,5 @@
 {
-  "totalCovers": 80,
+  "totalCovers": 81,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "b"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "b"},
@@ -80,6 +80,7 @@
     {"id": 77, "nombre": "Muerte en Hawai", "artista": "Juan", "tipo": "c"},
     {"id": 78, "nombre": "La media vuelta", "artista": "Juan Pablo", "tipo": "c"},
     {"id": 79, "nombre": "Back to december (Clara's version)", "artista": "Clarita", "tipo": "c"},
-    {"id": 80, "nombre": "Minueto en Sol", "artista": "Martin", "tipo": "c"}
+    {"id": 80, "nombre": "Minueto en Sol", "artista": "Martin", "tipo": "c"},
+    {"id": 81, "nombre": "Maguito Explosivo", "artista": "Clemnte y Pedro", "tipo": "c"}
   ]
 }

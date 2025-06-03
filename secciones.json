@@ -1,4 +1,11 @@
 {
+"81":[
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 4.8 },
+    { "etiqueta": "coro", "inicio": 21.4 },
+    { "etiqueta": "instrumental", "inicio": 35.1 },
+    { "etiqueta": "coda", "inicio": 52.6 }
+],
 "79":[
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 14 },
