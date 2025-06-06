@@ -1,4 +1,19 @@
 {
+"82":[
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 17.5 },
+    { "etiqueta": "estrofa", "inicio": 46.6 },
+    { "etiqueta": "coro", "inicio": 62.9 },
+    { "etiqueta": "estrofa", "inicio": 81.4 },
+    { "etiqueta": "estrofa", "inicio": 99.1 },
+    { "etiqueta": "estrofa", "inicio": 118.9 },
+    { "etiqueta": "coro", "inicio": 145 },
+    { "etiqueta": "estrofa", "inicio": 178.3 },
+    { "etiqueta": "coro", "inicio": 198.2 },
+    { "etiqueta": "estrofa", "inicio": 216.6 },
+    { "etiqueta": "estrofa", "inicio": 231.4 },
+    { "etiqueta": "coda", "inicio": 243.5 }
+],
 "81":[
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 4.8 },
