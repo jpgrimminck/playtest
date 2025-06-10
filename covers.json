@@ -83,7 +83,7 @@
     {"id": 80, "nombre": "Minueto en Sol", "artista": "Martin", "tipo": "c"},
     {"id": 81, "nombre": "Maguito Explosivo", "artista": "Clemente y Pedro", "tipo": "c"},
     {"id": 82, "nombre": "Mix tonadas Tradicionales", "artista": "Los huasos del camino viejo", "tipo": "b"},
-    {"id": 83, "nombre": "Tralalero Tralala", "artista": "Juan", "tipo": "c"},
+    {"id": 83, "nombre": "Tralalero Tralala", "artista": "Juan y Mateo", "tipo": "c"},
     {"id": 84, "nombre": "Coconut", "artista": "Samuel", "tipo": "a"}
   ]
 }
