@@ -1,5 +1,5 @@
 {
-  "totalCovers": 82,
+  "totalCovers": 84,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "b"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "b"},
@@ -82,6 +82,8 @@
     {"id": 79, "nombre": "Back to december (Clara's version)", "artista": "Clarita", "tipo": "c"},
     {"id": 80, "nombre": "Minueto en Sol", "artista": "Martin", "tipo": "c"},
     {"id": 81, "nombre": "Maguito Explosivo", "artista": "Clemente y Pedro", "tipo": "c"},
-    {"id": 82, "nombre": "Mix tonadas Tradicionales", "artista": "Los huasos del camino viejo", "tipo": "b"}
+    {"id": 82, "nombre": "Mix tonadas Tradicionales", "artista": "Los huasos del camino viejo", "tipo": "b"},
+    {"id": 83, "nombre": "Tralalero Tralala", "artista": "Juan", "tipo": "c"},
+    {"id": 84, "nombre": "Coconut", "artista": "Samuel", "tipo": "a"}
   ]
 }
