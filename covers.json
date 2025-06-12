@@ -86,7 +86,7 @@
     {"id": 83, "nombre": "Tralalero Tralala", "artista": "Juan y Mateo", "tipo": "c"},
     {"id": 84, "nombre": "Coconut", "artista": "Samuel", "tipo": "a"},
     {"id": 85, "nombre": "Miau Miau", "artista": "Samuel y Francisco", "tipo": "c"},
-    {"id": 85, "nombre": "Yo vengo de san Rosendo", "artista": "Eduardo", "tipo": "c"},
-    {"id": 85, "nombre": "La Media Vuelta", "artista": "Eduardo", "tipo": "c"}
+    {"id": 86, "nombre": "Yo vengo de san Rosendo", "artista": "Eduardo", "tipo": "c"},
+    {"id": 87, "nombre": "La Media Vuelta", "artista": "Eduardo", "tipo": "c"}
   ]
 }
