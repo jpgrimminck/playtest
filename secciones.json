@@ -1,4 +1,12 @@
 {
+"85":[
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 5.5 },
+    { "etiqueta": "estrofa", "inicio": 20.2 },
+    { "etiqueta": "estrofa", "inicio": 34.9 },
+    { "etiqueta": "estrofa", "inicio": 49.7 },
+    { "etiqueta": "coda", "inicio": 57.1 }
+],
 "84":[
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "coro", "inicio": 21.6 },
