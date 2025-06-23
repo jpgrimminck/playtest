@@ -83,6 +83,45 @@ html, body {
   }
 }
 
+/* Arreglo específico para el scroll en móviles - mantiene la visualización actual */
+@media (max-width: 768px), (hover: none), (pointer: coarse) {
+  /* El contenedor padre debe permitir scroll pero sin manejarlo directamente */
+  .sidebar {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    position: relative !important;
+    height: 100vh !important;
+  }
+  
+  /* El contenedor de miniaturas debe manejar su propio scroll para que funcione posicionarMiniatura() */
+  #miniaturasContainer {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: 100vh !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    /* Mantener las propiedades flex para el posicionamiento */
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  
+  /* Asegurar que las miniaturas mantengan su aspecto y no se compriman */
+  .sidebar .miniatura {
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px !important;
+    min-height: 100px !important;
+    aspect-ratio: 1/1 !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+  }
+}
+
 /* ====================================================================== */
 /* ===================  ÁREA PRINCIPAL DE REPRODUCCIÓN  ================= */
 /* ====================================================================== */
