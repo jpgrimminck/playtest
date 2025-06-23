@@ -653,6 +653,13 @@
         contenedor.appendChild(btn);
       });
 
+      // Crear contenedor para los botones
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.style.display = 'flex';
+      buttonsContainer.style.justifyContent = 'center';
+      buttonsContainer.style.gap = '20px';
+      buttonsContainer.style.marginTop = '20px';
+
       // Crear el botón "forward-arrow" para ir a lyrics.html
       const forwardArrow = document.createElement('a');
       forwardArrow.className = 'back-arrow';
@@ -660,16 +667,35 @@
       forwardArrow.href = 'lyrics.html';
       forwardArrow.style.position = 'relative';
       forwardArrow.style.bottom = 'auto';
-      forwardArrow.style.left = '50%';
-      forwardArrow.style.transform = 'translateX(-50%)';
+      forwardArrow.style.left = 'auto';
+      forwardArrow.style.transform = 'none';
       forwardArrow.innerHTML = `
         <svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
           <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="mic.svg"/>
         </svg>
       `;
-      contenedor.insertAdjacentElement('afterend', forwardArrow);
 
-      // Asegurar que el botón "forward-arrow" pase los parámetros necesarios a lyrics.html
+      // Crear el botón "docs-arrow" para ir a docs.html
+      const docsArrow = document.createElement('a');
+      docsArrow.className = 'back-arrow';
+      docsArrow.id = 'docsArrow';
+      docsArrow.href = 'docs.html';
+      docsArrow.style.position = 'relative';
+      docsArrow.style.bottom = 'auto';
+      docsArrow.style.left = 'auto';
+      docsArrow.style.transform = 'none';
+      docsArrow.innerHTML = `
+        <svg id="Note_1" data-name="Note 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
+          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="note.svg"/>
+        </svg>
+      `;
+
+      // Agregar ambos botones al contenedor
+      buttonsContainer.appendChild(forwardArrow);
+      buttonsContainer.appendChild(docsArrow);
+      contenedor.insertAdjacentElement('afterend', buttonsContainer);
+
+      // Asegurar que ambos botones pasen los parámetros necesarios
       const params = new URLSearchParams(window.location.search);
       const song = params.get('song');
       const cover = params.get('cover');
@@ -677,6 +703,7 @@
       const audioUrlParam = params.get('audio');
 
       forwardArrow.href = `lyrics.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
+      docsArrow.href = `docs.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
 
       // Verificar si el ID existe en lyrics.json antes de mostrar el botón "forward-arrow"
       fetch('lyrics.json')
@@ -695,6 +722,42 @@
         })
         .catch(error => {
           console.error('Error al verificar el ID en lyrics.json:', error);
+        });
+
+      // Verificar si existe la carpeta docs/{song}/ antes de mostrar el botón "docs-arrow"
+      // Verificar tanto 1.jpeg como 1.pdf
+      const docsPath = `docs/${song}/`;
+      let docsFound = false;
+      let checksCompleted = 0;
+      
+      function checkDocsComplete() {
+        checksCompleted++;
+        if (checksCompleted === 2) {
+          docsArrow.style.display = docsFound ? 'block' : 'none';
+        }
+      }
+      
+      // Intentar cargar una imagen de prueba para verificar si existe 1.jpeg
+      const testImage = new Image();
+      testImage.onload = function() {
+        docsFound = true;
+        checkDocsComplete();
+      };
+      testImage.onerror = function() {
+        checkDocsComplete();
+      };
+      testImage.src = `${docsPath}1.jpeg`;
+      
+      // Intentar cargar un PDF de prueba para verificar si existe 1.pdf
+      fetch(`${docsPath}1.pdf`, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            docsFound = true;
+          }
+          checkDocsComplete();
+        })
+        .catch(() => {
+          checkDocsComplete();
         });
     }
 

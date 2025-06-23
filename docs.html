@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Clave para la responsividad y el diseño móvil -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="transparent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Galería Vertical Móvil</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="docs-page">
+
+    <!-- Botón de retorno -->
+    <a class="back-arrow" id="backButton">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 4l-8 8 8 8" stroke="#4a9eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
+    <main class="gallery-container" id="gallery">
+        <!-- Las imágenes se cargarán dinámicamente con JavaScript -->
+    </main>
+
+    <script>
+        // Configuración global de PDF.js para mejor compatibilidad con iOS
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // Configuraciones adicionales para iOS
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            // Desactivar workers en iOS para mejor estabilidad
+            pdfjsLib.disableWorker = true;
+        }
+
+        // Obtener parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const songId = urlParams.get('song');
+        const cover = urlParams.get('cover');
+        const title = urlParams.get('title');
+        const audioUrl = urlParams.get('audio');
+
+        // Configurar el botón de retorno
+        const backButton = document.getElementById('backButton');
+        if (songId) {
+            backButton.href = `details.html?song=${encodeURIComponent(songId)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrl)}`;
+        } else {
+            backButton.href = 'index.html';
+        }
+
+        backButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = backButton.href;
+        });
+
+        // Lista de posibles nombres de archivos de imágenes
+        const imageNames = [
+            '1.jpeg', '2.jpeg', '3.jpeg', '4.jpeg', 
+            '5.jpeg', '6.jpeg', '7.jpeg', '8.jpeg',
+            '9.jpeg', '10.jpeg', '11.jpeg', '12.jpeg',
+            '13.jpeg', '14.jpeg', '15.jpeg', '16.jpeg',
+            '17.jpeg', '18.jpeg', '19.jpeg', '20.jpeg'
+        ];
+        
+        // Lista de posibles nombres de archivos PDF
+        const pdfNames = [
+            '1.pdf', '2.pdf', '3.pdf', '4.pdf', 
+            '5.pdf', '6.pdf', '7.pdf', '8.pdf',
+            '9.pdf', '10.pdf', '11.pdf', '12.pdf',
+            '13.pdf', '14.pdf', '15.pdf', '16.pdf',
+            '17.pdf', '18.pdf', '19.pdf', '20.pdf'
+        ];
+        
+        const galleryContainer = document.getElementById('gallery');
+        // Usar el songId de los parámetros para determinar la carpeta
+        const basePath = songId ? `docs/${songId}/` : 'docs/79/';
+        
+
+        
+        // Función para verificar si una imagen existe y cargarla
+        function loadImage(imagePath, fileName, index) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    // Si la imagen se carga correctamente, añadirla a la galería
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.setAttribute('data-index', index); // Para mantener orden
+                    galleryItem.setAttribute('data-type', 'image');
+                    
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imagePath;
+                    imgElement.alt = `Imagen ${index + 1}`;
+                    
+                    galleryItem.appendChild(imgElement);
+                    resolve({ element: galleryItem, index: index, found: true, type: 'image' });
+                };
+                img.onerror = function() {
+                    // Si la imagen no existe, resolver sin elemento
+                    console.log(`Imagen no encontrada: ${imagePath}`);
+                    resolve({ element: null, index: index, found: false, type: 'image' });
+                };
+                img.src = imagePath;
+            });
+        }
+
+        // Función para cargar un PDF y renderizar todas sus páginas
+        function loadPDF(pdfPath, fileName, index) {
+            return new Promise(async (resolve) => {
+                try {
+                    console.log(`Intentando cargar PDF: ${pdfPath}`);
+                    
+                    // Configuración específica para iOS
+                    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                    
+                    const loadingTask = pdfjsLib.getDocument({
+                        url: pdfPath,
+                        disableWorker: isIOSDevice, // Deshabilitar worker en iOS
+                        isEvalSupported: false, // Mejorar compatibilidad con iOS
+                        disableRange: isIOSDevice, // Cargar PDF completo en iOS
+                        disableStream: isIOSDevice, // Deshabilitar streaming en iOS
+                        verbosity: 0 // Reducir logs
+                    });
+                    
+                    const pdf = await loadingTask.promise;
+                    console.log(`PDF cargado exitosamente: ${fileName}, páginas: ${pdf.numPages}`);
+                    
+                    const elements = [];
+                    
+                    // Renderizar todas las páginas del PDF
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        try {
+                            const page = await pdf.getPage(pageNum);
+                            
+                            // Escala optimizada para móviles
+                            const scale = isIOSDevice ? 1.8 : 1.5;
+                            const viewport = page.getViewport({ scale: scale });
+                            
+                            // Crear canvas con configuraciones específicas para iOS
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d', {
+                                alpha: false, // Mejor rendimiento en iOS
+                                willReadFrequently: false
+                            });
+                            
+                            // Configurar dimensiones del canvas
+                            if (isIOSDevice) {
+                                // En iOS, usar dimensiones directas para evitar problemas de escalado
+                                canvas.width = Math.floor(viewport.width);
+                                canvas.height = Math.floor(viewport.height);
+                                canvas.style.width = "100%";
+                                canvas.style.height = "auto";
+                            } else {
+                                // En desktop, usar escalado de alta resolución pero ajustar al ancho
+                                const outputScale = window.devicePixelRatio || 1;
+                                canvas.width = Math.floor(viewport.width * outputScale);
+                                canvas.height = Math.floor(viewport.height * outputScale);
+                                canvas.style.width = "100%"; // Cambiar a 100% para que se ajuste al ancho
+                                canvas.style.height = "auto";
+                                
+                                if (outputScale !== 1) {
+                                    context.scale(outputScale, outputScale);
+                                }
+                            }
+                            
+                            // Renderizar la página en el canvas
+                            const renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            
+                            await page.render(renderContext).promise;
+                            console.log(`Página ${pageNum} renderizada exitosamente`);
+                            
+                            // Crear elemento contenedor para la página
+                            const pageElement = document.createElement('div');
+                            pageElement.className = 'gallery-item pdf-page';
+                            pageElement.setAttribute('data-index', index + (pageNum - 1) * 0.1);
+                            pageElement.setAttribute('data-type', 'pdf');
+                            pageElement.appendChild(canvas);
+                            
+                            elements.push(pageElement);
+                            
+                        } catch (renderError) {
+                            console.warn(`Error renderizando página ${pageNum} del PDF ${fileName}:`, renderError);
+                            
+                            // Fallback: crear un elemento de error para esta página
+                            const errorElement = document.createElement('div');
+                            errorElement.className = 'gallery-item pdf-error';
+                            errorElement.setAttribute('data-index', index + (pageNum - 1) * 0.1);
+                            errorElement.innerHTML = `
+                                <div style="padding: 20px; text-align: center; background: #444; border: 1px solid #666; color: #ccc; border-radius: 4px;">
+                                    <p>Error cargando página ${pageNum} de ${fileName}</p>
+                                    <a href="${pdfPath}" target="_blank" style="color: #4a9eff; text-decoration: none;">👁️ Abrir PDF completo</a>
+                                </div>
+                            `;
+                            
+                            elements.push(errorElement);
+                        }
+                    }
+                    
+                    resolve({ elements: elements, index: index, found: true, type: 'pdf' });
+                } catch (error) {
+                    console.error(`Error general cargando PDF ${pdfPath}:`, error);
+                    resolve({ elements: [], index: index, found: false, type: 'pdf' });
+                }
+            });
+        }
+        
+        // Cargar todas las imágenes y PDFs
+        async function loadAllContent() {
+            const allResults = [];
+            
+            // Cargar imágenes primero
+            const imagePromises = imageNames.map((imageName, index) => {
+                const imagePath = basePath + imageName;
+                return loadImage(imagePath, imageName, index);
+            });
+            
+            const imageResults = await Promise.all(imagePromises);
+            allResults.push(...imageResults);
+            
+            // Cargar PDFs después de las imágenes
+            const pdfPromises = pdfNames.map((pdfName, index) => {
+                const pdfPath = basePath + pdfName;
+                // Usar índice alto para que los PDFs aparezcan después de las imágenes
+                return loadPDF(pdfPath, pdfName, 1000 + index);
+            });
+            
+            const pdfResults = await Promise.all(pdfPromises);
+            allResults.push(...pdfResults);
+            
+            // Procesar resultados: primero imágenes, luego PDFs
+            const foundImages = imageResults.filter(result => result.found);
+            const foundPDFs = pdfResults.filter(result => result.found);
+            
+            // Agregar imágenes al contenedor
+            foundImages
+                .sort((a, b) => a.index - b.index)
+                .forEach(result => {
+                    galleryContainer.appendChild(result.element);
+                });
+            
+            // Agregar páginas de PDFs al contenedor
+            foundPDFs
+                .sort((a, b) => a.index - b.index)
+                .forEach(result => {
+                    result.elements.forEach(element => {
+                        galleryContainer.appendChild(element);
+                    });
+                });
+            
+            // Mostrar mensaje si no se encontró ningún contenido
+            if (foundImages.length === 0 && foundPDFs.length === 0) {
+                const noContentMessage = document.createElement('div');
+                noContentMessage.className = 'no-images-message';
+                noContentMessage.textContent = `No se encontraron imágenes ni PDFs en la carpeta docs/${songId || '79'}/`;
+                galleryContainer.appendChild(noContentMessage);
+            }
+        }
+        
+        // Iniciar la carga de todo el contenido
+        loadAllContent();
+    </script>
+
+</body>
+</html>

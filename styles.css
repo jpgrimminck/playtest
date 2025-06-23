@@ -16,23 +16,29 @@ html, body {
   flex-direction: row;
   height: 100vh;
   overflow: hidden;
-  padding-top: env(safe-area-inset-top); /* Ajuste para notch/status-bar */
+ /* padding-top: env(safe-area-inset-top); /* Ajuste para notch/status-bar */
 }
 
 /* ====================================================================== */
 /* ===============  BARRA LATERAL CON MINIATURAS (SIDEBAR) ============== */
 /* ====================================================================== */
 .sidebar {
-  width: 100px;                     /* Ancho fijo */
+  width: 100px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  overflow-y: auto;                 /* Scroll vertical solo aquí */
-  -webkit-overflow-scrolling: touch;/* Inercia en iOS */
-  gap: 0;                           /* Sin espacios extra */
-  /* Coloca la barra sobre el "notch"/status-bar en iPhone */
-  margin-top: calc(-1 * env(safe-area-inset-top));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 0;
+  
+  /* padding-top: var(--sat, 0px); */ /* Ya no es crucial si env() es 0px */
+  /* padding-bottom: var(--sab, 0px); */ /* Ya no es crucial si env() es 0px */
+  /* Si necesitas un padding superior específico por diseño, añádelo aquí */
+  /* padding-top: 10px; */ /* Ejemplo */
+
+  box-sizing: border-box;
+  height: 100%;
 }
 
 /* Botones de miniaturas */
@@ -82,14 +88,24 @@ html, body {
 /* ====================================================================== */
 .main {
   flex-grow: 1;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; 
   align-items: center;
   gap: 20px;
   position: relative;
   overflow: hidden;
+  background-color: #363739; /* o #ff6666 como tenías antes */
+  
+  /* Mantenemos el padding-top de 160px si es parte de tu diseño,
+     var(--sat) probablemente será 0px ahora. */
+  padding-top: 160px; /* O calc(160px + var(--sat, 0px)); si quieres mantener la variable por si acaso */
+  /* padding-bottom: var(--sab, 0px); */ /* Ya no es crucial si env() es 0px */
+  /* Si necesitas un padding inferior específico por diseño, añádelo aquí */
+  /* padding-bottom: 20px; */ /* Ejemplo */
+
+  box-sizing: border-box;
+  height: 100%;
 }
 
 /* Carátula del tema actual */
@@ -149,15 +165,27 @@ html, body {
 #guitarraBtn {
   width: 50px;
   height: 50px;
-  position: absolute;
-  top: calc(50% - 310px);
+  position: absolute; /* Cambiado para posicionamiento absoluto respecto a .main */
+  
+  /* Centrado horizontal: .main centra sus hijos (como .caratula)
+     así que left: 50% y translateX(-50%) centrarán el botón en .main */
   left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
+  
+  /* Centrado vertical sobre .caratula:
+     - .main padding-top: 160px
+     - .caratula height: 200px (su centro está a 100px de su borde superior)
+     - Centro vertical de .caratula desde el top de .main = 160px + 100px = 260px
+     - #guitarraBtn height: 50px (su centro está a 25px de su borde superior)
+     - Para alinear centros: top del botón = 260px (centro carátula) - 25px (mitad botón) = 235px */
+  top: 90px; 
+  
+  transform: translateX(-50%); /* Para ajustar el left: 50% y centrar el botón */
+  
+  z-index: 2; /* Para asegurar que esté sobre la carátula si es necesario */
 
   display: none;                    /* Visible solo en covers con audio alternativo */
-  align-items: center;
-  justify-content: center;
+  align-items: center;              /* Para centrar el contenido del botón (ej. ícono) */
+  justify-content: center;          /* Para centrar el contenido del botón (ej. ícono) */
 
   border: none;
   border-radius: 50%;
@@ -181,7 +209,7 @@ html, body {
 /* Botón de detalles */
 .details-arrow {
   position: absolute;
-  top: 20px;
+  top: 60px;
   right: 20px;
   font-size: 36px;
   color: #4a9eff;
@@ -196,7 +224,6 @@ html, body {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 0;
 }
 
 .details-arrow:hover {
@@ -225,4 +252,129 @@ html, body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-} 
+}
+
+/* ====================================================================== */
+/* =====================  ESTILOS PARA DOCS.HTML  ====================== */
+/* ====================================================================== */
+
+/* CSS variables for safe areas */
+:root {
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+    --sar: env(safe-area-inset-right);
+}
+
+/* Reset básico y configuración general para galería */
+.gallery-container * {
+    box-sizing: border-box; /* Incluye padding y border en el ancho/alto total del elemento */
+}
+
+/* Estilos específicos para el body de docs.html */
+body.docs-page {
+    margin: 0; /* Elimina márgenes por defecto del navegador */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #363739; /* Fondo oscuro consistente */
+    line-height: 0; /* Ayuda a eliminar espacios extra si las imágenes fueran inline-block */
+    overflow-y: auto; /* Permite scroll vertical */
+    overflow-x: hidden; /* Evita scroll horizontal */
+    min-height: 100vh; /* Altura completa de la ventana */
+}
+
+/* Back arrow button for docs.html */
+.back-arrow {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 20px);
+    left: 20px;
+    font-size: 36px;
+    color: #4a9eff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 10;
+    background: rgba(34,34,34,0.7);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.back-arrow:hover {
+    transform: translateX(-5px);
+}
+
+/* Contenedor principal de la galería */
+.gallery-container {
+    width: 100%;
+    min-height: 100vh; /* Asegura que ocupe al menos toda la altura */
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    padding-top: calc(env(safe-area-inset-top) + 80px);
+    /* No se necesita display: flex o grid aquí,
+       los elementos block se apilan verticalmente por defecto. */
+}
+
+/* Message for when no images are found */
+.no-images-message {
+    text-align: center;
+    margin-top: 50px;
+    color: #ccc;
+    font-size: 18px;
+}
+
+/* Contenedor de cada imagen (opcional, pero útil para futura expansión) */
+.gallery-item {
+    width: 100%;
+    margin-bottom: 5px; /* Agregar bottom padding de 5px */
+    /* Si quisieras un mínimo espacio entre imágenes, podrías añadirlo aquí: */
+    /* margin-bottom: 2px; */
+    /* Pero la solicitud es "márgenes mínimos" y "sin espacios", así que lo omitimos por defecto. */
+}
+
+/* Estilo de las imágenes */
+.gallery-item img {
+    display: block; /* Elimina cualquier espacio extra debajo de la imagen (comportamiento inline) */
+    width: 100%;   /* Ocupa el 100% del ancho de su contenedor (.gallery-item) */
+    height: auto;  /* Mantiene la proporción original de la imagen */
+    /* No se necesita margin o padding aquí, ya que el body y .gallery-item controlan los bordes. */
+}
+
+/* Estilos para PDFs */
+.pdf-page {
+    width: 100%;
+    margin-bottom: 5px; /* Cambiar de 0 a 5px para coincidir con .gallery-item */
+}
+
+.pdf-page canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Fallback para errores de PDF */
+.pdf-error {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.pdf-error div {
+    background-color: #444 !important;
+    border-color: #666 !important;
+    color: #ccc !important;
+}
+
+.pdf-error p {
+    color: #ccc !important;
+}
+
+.pdf-error a {
+    color: #4a9eff !important;
+}
