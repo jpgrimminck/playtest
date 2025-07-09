@@ -1202,22 +1202,59 @@
     const speedSliderContainer = document.getElementById('speedSliderContainer');
     const speedSliderFill = document.getElementById('speedSliderFill');
 
+    // Variable para debounce en móviles
+    let speedUpdateTimeout = null;
+
     // Función para actualizar la visualización del slider
     function updateSliderVisual(value) {
       const percentage = ((value - 0.6) / (1.0 - 0.6)) * 100;
       speedSliderFill.style.height = percentage + '%';
     }
 
+    // Función optimizada para móviles con debounce
+    function updateSpeedMobile(speed) {
+      // Actualizar visualización inmediatamente
+      updateSliderVisual(speed);
+      speedButtonText.textContent = Math.round(speed * 100);
+      
+      // Debounce para el cambio real de velocidad
+      if (speedUpdateTimeout) {
+        clearTimeout(speedUpdateTimeout);
+      }
+      
+      speedUpdateTimeout = setTimeout(() => {
+        if (audio && speed >= 0.6 && speed <= 1.0) {
+          currentSpeed = speed;
+          const wasPlaying = !audio.paused;
+          
+          // Cambiar velocidad de forma más suave
+          try {
+            audio.playbackRate = speed;
+            
+            // Si se pausó inesperadamente, reanudar
+            if (wasPlaying && audio.paused) {
+              audio.play().catch(console.warn);
+            }
+          } catch (error) {
+            console.warn('Error changing playback rate:', error);
+          }
+        }
+      }, 150); // Delay fijo para móviles
+    }
+
     // Función simple para actualizar velocidad sin interrumpir reproducción
     function updateSpeed(speed) {
       if (audio && speed >= 0.6 && speed <= 1.0) {
-        currentSpeed = speed;
-        // Verificar que el audio esté listo antes de cambiar velocidad
-        if (audio.readyState >= 1) {
-          audio.playbackRate = speed;
+        // En dispositivos móviles, usar la función optimizada con debounce
+        if (isMobile()) {
+          updateSpeedMobile(speed);
+          return;
         }
+        
+        // En desktop, aplicar inmediatamente como antes
+        currentSpeed = speed;
+        audio.playbackRate = speed;
         updateSliderVisual(speed);
-        // Actualizar el texto del botón en tiempo real
         speedButtonText.textContent = Math.round(speed * 100);
       }
     }
@@ -1232,6 +1269,32 @@
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
+    });
+
+    // Manejar mouse down para iniciar el cambio continuo
+    speedSliderContainer.addEventListener('mousedown', (e) => {
+      const rect = speedSliderContainer.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const percentage = 1 - (y / rect.height);
+      const value = 0.6 + (percentage * (1.0 - 0.6));
+      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      
+      speedSlider.value = clampedValue;
+      updateSpeed(clampedValue);
+    });
+
+    // Manejar movimiento del mouse mientras se arrastra
+    speedSliderContainer.addEventListener('mousemove', (e) => {
+      if (e.buttons === 1) { // Solo si el botón izquierdo está presionado
+        const rect = speedSliderContainer.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const percentage = 1 - (y / rect.height);
+        const value = 0.6 + (percentage * (1.0 - 0.6));
+        const clampedValue = Math.max(0.6, Math.min(1.0, value));
+        
+        speedSlider.value = clampedValue;
+        updateSpeed(clampedValue);
+      }
     });
 
     // Manejar touch en el contenedor del slider
@@ -1262,19 +1325,22 @@
       updateSpeed(clampedValue);
     });
 
-    // Asegurar que la velocidad se mantenga cuando el audio esté listo
-    audio.addEventListener('loadedmetadata', () => {
-      audio.playbackRate = currentSpeed;
-    });
-
-    // Inicializar velocidad
-    currentSpeed = 1.0;
-    updateSliderVisual(1.0);
-    
     // Control del botón de velocidad
     const speedButton = document.getElementById('speedButton');
     const speedButtonText = document.getElementById('speedButtonText');
     const speedControl = document.getElementById('speedControl');
+    
+    // Inicializar velocidad
+    currentSpeed = 1.0;
+    updateSliderVisual(1.0);
+    speedButtonText.textContent = '100'; // Inicializar el texto del botón
+    // Asegurar que el input range también tenga el valor correcto
+    speedSlider.value = 1.0;
+    
+    // Asegurar que la velocidad se aplique desde el inicio
+    audio.addEventListener('loadeddata', () => {
+      audio.playbackRate = currentSpeed;
+    });
     
     // Mostrar/ocultar el control de velocidad
     speedButton.addEventListener('click', () => {
@@ -1304,6 +1370,12 @@
     // Función para detectar iOS
     function isIOS() {
       return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    // Función para detectar dispositivos móviles
+    function isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+             (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
     }
 
     // Función para detectar modo app
@@ -1373,7 +1445,6 @@
         `;
       }).join('');
     }
-    renderizarLineas();
 
     function moverACodigoDeTiempo(tiempo) {
       const tiempoConDesfase = Math.max(0, tiempo + DESFASE); // Aplica el desfase sumándolo
