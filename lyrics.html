@@ -154,6 +154,85 @@
     .mute-button.muted {
       color: #f44336;
     }
+    .speed-button {
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 80px);
+      right: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #4a9eff;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      z-index: 50;
+      background: rgba(34,34,34,0.7);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: none;
+    }
+    .speed-button:hover {
+      transform: scale(1.1);
+    }
+    .speed-control {
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 140px);
+      right: 20px;
+      width: 48px;
+      height: 200px;
+      z-index: 50;
+      background: rgba(34,34,34,0.7);
+      border-radius: 6px;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      touch-action: none; /* Prevenir scroll accidental */
+    }
+    .speed-slider-container {
+      position: relative;
+      width: 48px;
+      height: 200px;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      touch-action: pan-y;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .speed-slider-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #4a9eff;
+      border-radius: 6px;
+      transition: height 0.1s ease;
+      pointer-events: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .speed-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
     button.section-btn {
       position: relative;
       display: flex;
@@ -450,6 +529,15 @@
       <path id="soundWaves" d="M15.54 8.46a5 5 0 0 1 0 7.07M18.07 5.93a10 10 0 0 1 0 12.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
+  <button class="mute-button" id="speedButton" aria-label="Control de velocidad" style="top: calc(env(safe-area-inset-top) + 80px);">
+    <span id="speedButtonText" style="color: #4a9eff; font-size: 16px; font-weight: bold;">100</span>
+  </button>
+  <div class="speed-control" id="speedControl" style="display: none; top: calc(env(safe-area-inset-top) + 140px);">
+    <div class="speed-slider-container" id="speedSliderContainer">
+      <div class="speed-slider-fill" id="speedSliderFill"></div>
+      <input type="range" id="speedSlider" class="speed-slider" min="0.6" max="1.0" step="0.01" value="1.0" orient="vertical">
+    </div>
+  </div>
   <div class="info" id="detailsContainer"></div>
   <div id="error-message"></div>
   <div id="loading-audio" style="display:none; color:#4a9eff; font-size:1.2em; margin:20px;">Cargando audio...</div>
@@ -614,6 +702,9 @@
 
     let audioReady = false;
     let pendingPlay = false;
+    
+    // Variable simple para velocidad actual
+    let currentSpeed = 1.0;
 
     // Mostrar controles cuando el audio esté completamente cargado
     audioElement.addEventListener('canplaythrough', () => {
@@ -630,6 +721,10 @@
       if (document.getElementById('secciones').children.length > 0) {
         playerControls.style.display = 'block';
       }
+      
+      // Asegurar que la velocidad se aplique cuando el audio esté listo
+      audio.playbackRate = currentSpeed;
+      
       if (pendingPlay) {
         audio.play();
         pendingPlay = false;
@@ -1102,6 +1197,110 @@
       }
     });
 
+    // Configurar el control de velocidad
+    const speedSlider = document.getElementById('speedSlider');
+    const speedSliderContainer = document.getElementById('speedSliderContainer');
+    const speedSliderFill = document.getElementById('speedSliderFill');
+
+    // Función para actualizar la visualización del slider
+    function updateSliderVisual(value) {
+      const percentage = ((value - 0.6) / (1.0 - 0.6)) * 100;
+      speedSliderFill.style.height = percentage + '%';
+    }
+
+    // Función simple para actualizar velocidad sin interrumpir reproducción
+    function updateSpeed(speed) {
+      if (audio && speed >= 0.6 && speed <= 1.0) {
+        currentSpeed = speed;
+        // Verificar que el audio esté listo antes de cambiar velocidad
+        if (audio.readyState >= 1) {
+          audio.playbackRate = speed;
+        }
+        updateSliderVisual(speed);
+        // Actualizar el texto del botón en tiempo real
+        speedButtonText.textContent = Math.round(speed * 100);
+      }
+    }
+
+    // Manejar clics en el contenedor del slider
+    speedSliderContainer.addEventListener('click', (e) => {
+      const rect = speedSliderContainer.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const percentage = 1 - (y / rect.height); // Invertir porque queremos que abajo sea 0.6 y arriba 1.0
+      const value = 0.6 + (percentage * (1.0 - 0.6));
+      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      
+      speedSlider.value = clampedValue;
+      updateSpeed(clampedValue);
+    });
+
+    // Manejar touch en el contenedor del slider
+    speedSliderContainer.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const rect = speedSliderContainer.getBoundingClientRect();
+      const touch = e.touches[0];
+      const y = touch.clientY - rect.top;
+      const percentage = 1 - (y / rect.height);
+      const value = 0.6 + (percentage * (1.0 - 0.6));
+      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      
+      speedSlider.value = clampedValue;
+      updateSpeed(clampedValue);
+    });
+
+    // Manejar movimiento durante touch
+    speedSliderContainer.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const rect = speedSliderContainer.getBoundingClientRect();
+      const touch = e.touches[0];
+      const y = touch.clientY - rect.top;
+      const percentage = 1 - (y / rect.height);
+      const value = 0.6 + (percentage * (1.0 - 0.6));
+      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      
+      speedSlider.value = clampedValue;
+      updateSpeed(clampedValue);
+    });
+
+    // Asegurar que la velocidad se mantenga cuando el audio esté listo
+    audio.addEventListener('loadedmetadata', () => {
+      audio.playbackRate = currentSpeed;
+    });
+
+    // Inicializar velocidad
+    currentSpeed = 1.0;
+    updateSliderVisual(1.0);
+    
+    // Control del botón de velocidad
+    const speedButton = document.getElementById('speedButton');
+    const speedButtonText = document.getElementById('speedButtonText');
+    const speedControl = document.getElementById('speedControl');
+    
+    // Mostrar/ocultar el control de velocidad
+    speedButton.addEventListener('click', () => {
+      if (speedControl.style.display === 'none' || speedControl.style.display === '') {
+        speedControl.style.display = 'flex';
+      } else {
+        speedControl.style.display = 'none';
+      }
+    });
+    
+    // Ocultar el control cuando se suelta el slider
+    speedSliderContainer.addEventListener('mouseup', () => {
+      speedControl.style.display = 'none';
+    });
+    
+    // Para dispositivos touch
+    speedSliderContainer.addEventListener('touchend', () => {
+      speedControl.style.display = 'none';
+    });
+    
+    // También mantener el evento del input range oculto para compatibilidad
+    speedSlider.addEventListener('input', (e) => {
+      const speed = parseFloat(speedSlider.value);
+      updateSpeed(speed);
+    });
+
     // Función para detectar iOS
     function isIOS() {
       return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -1131,6 +1330,7 @@
     document.addEventListener('touchmove', function(e) {
       if (e.target.closest('.seekbar-touch-area')) return;
       if (e.target.closest('.info')) return;
+      if (e.target.closest('.speed-control')) return; // Permitir interacción con el control de velocidad
     }, { passive: true });
 
     // Añadir al final del <script>
