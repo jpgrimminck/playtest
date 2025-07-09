@@ -1271,8 +1271,38 @@
       updateSpeed(clampedValue);
     });
 
-    // Manejar mouse down para iniciar el cambio continuo
+    // Variables para control de drag
+    let isDragging = false;
+    let lastY = 0;
+
+    // Manejar mouse down para iniciar el drag
     speedSliderContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastY = e.clientY;
+      
+      const rect = speedSliderContainer.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const percentage = 1 - (y / rect.height);
+      const value = 0.6 + (percentage * (1.0 - 0.6));
+      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      
+      speedSlider.value = clampedValue;
+      updateSpeed(clampedValue);
+      
+      // Prevenir selección de texto
+      e.preventDefault();
+    });
+
+    // Manejar movimiento del mouse SOLO cuando se está arrastrando
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      // Solo procesar si hay movimiento vertical significativo
+      const deltaY = Math.abs(e.clientY - lastY);
+      if (deltaY < 2) return; // Umbral mínimo para evitar micro-movimientos
+      
+      lastY = e.clientY;
+      
       const rect = speedSliderContainer.getBoundingClientRect();
       const y = e.clientY - rect.top;
       const percentage = 1 - (y / rect.height);
@@ -1283,17 +1313,11 @@
       updateSpeed(clampedValue);
     });
 
-    // Manejar movimiento del mouse mientras se arrastra
-    speedSliderContainer.addEventListener('mousemove', (e) => {
-      if (e.buttons === 1) { // Solo si el botón izquierdo está presionado
-        const rect = speedSliderContainer.getBoundingClientRect();
-        const y = e.clientY - rect.top;
-        const percentage = 1 - (y / rect.height);
-        const value = 0.6 + (percentage * (1.0 - 0.6));
-        const clampedValue = Math.max(0.6, Math.min(1.0, value));
-        
-        speedSlider.value = clampedValue;
-        updateSpeed(clampedValue);
+    // Detener drag al soltar el mouse
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        speedControl.style.display = 'none';
       }
     });
 
@@ -1349,11 +1373,6 @@
       } else {
         speedControl.style.display = 'none';
       }
-    });
-    
-    // Ocultar el control cuando se suelta el slider
-    speedSliderContainer.addEventListener('mouseup', () => {
-      speedControl.style.display = 'none';
     });
     
     // Para dispositivos touch
