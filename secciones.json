@@ -2,16 +2,16 @@
 
 "94":[
     { "etiqueta": "intro", "inicio": 0 },
-    { "etiqueta": "estrofa", "inicio": 14.5 },
-    { "etiqueta": "coro", "inicio": 31.8 },
-    { "etiqueta": "estrofa", "inicio": 49.4 },
-    { "etiqueta": "coro", "inicio": 66.9 },
-    { "etiqueta": "puente", "inicio": 83.4 },
-    { "etiqueta": "instrumental", "inicio": 100.5 },
-    { "etiqueta": "estrofa", "inicio": 119.8 },
-    { "etiqueta": "coro", "inicio": 136.2 },
-    { "etiqueta": "instrumental", "inicio": 154.1 },
-    { "etiqueta": "coro", "inicio": 170.6 }
+    { "etiqueta": "estrofa", "inicio": 13.6 },
+    { "etiqueta": "coro", "inicio": 30.9 },
+    { "etiqueta": "estrofa", "inicio": 48.5 },
+    { "etiqueta": "coro", "inicio": 66 },
+    { "etiqueta": "puente", "inicio": 82.5 },
+    { "etiqueta": "instrumental", "inicio": 99.6 },
+    { "etiqueta": "estrofa", "inicio": 118.9 },
+    { "etiqueta": "coro", "inicio": 135.3 },
+    { "etiqueta": "instrumental", "inicio": 153.2 },
+    { "etiqueta": "coro", "inicio": 169.7 }
 ],
 "85":[
     { "etiqueta": "intro", "inicio": 0 },
