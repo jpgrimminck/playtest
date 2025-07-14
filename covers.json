@@ -1,5 +1,5 @@
 {
-  "totalCovers": 92,
+  "totalCovers": 93,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "b"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "b"},
@@ -92,6 +92,7 @@
     {"id": 89, "nombre": "Es war eine Mutter", "artista": "Emma y Martín", "tipo": "c"},
     {"id": 90, "nombre": "Piratas del Caribe", "artista": "Agustín", "tipo": "c"},
     {"id": 91, "nombre": "Capaz", "artista": "Eli y Ame", "tipo": "c"},
-    {"id": 92, "nombre": "Llueve sobre la ciudad", "artista": "Josefa y Emilio", "tipo": "c"}
+    {"id": 92, "nombre": "Llueve sobre la ciudad", "artista": "Josefa y Emilio", "tipo": "c"},
+    {"id": 93, "nombre": "Panamericana", "artista": "Max", "tipo": "c"}
   ]
 }
