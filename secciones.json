@@ -5,13 +5,13 @@
     { "etiqueta": "estrofa", "inicio": 13.6 },
     { "etiqueta": "coro", "inicio": 30.9 },
     { "etiqueta": "estrofa", "inicio": 48.5 },
-    { "etiqueta": "coro", "inicio": 65.5 },
+    { "etiqueta": "coro", "inicio": 65.7 },
     { "etiqueta": "puente", "inicio": 82.5 },
     { "etiqueta": "instrumental", "inicio": 99.6 },
     { "etiqueta": "estrofa", "inicio": 118.9 },
-    { "etiqueta": "coro", "inicio": 135.3 },
+    { "etiqueta": "coro", "inicio": 134.8 },
     { "etiqueta": "instrumental", "inicio": 153.2 },
-    { "etiqueta": "coro", "inicio": 169.7 }
+    { "etiqueta": "coro", "inicio": 169.3 }
 ],
 "85":[
     { "etiqueta": "intro", "inicio": 0 },
