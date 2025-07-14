@@ -675,6 +675,21 @@
         </svg>
       `;
 
+      // Crear el botón "drums-arrow" para ir a drums.html
+      const drumsArrow = document.createElement('a');
+      drumsArrow.className = 'back-arrow';
+      drumsArrow.id = 'drumsArrow';
+      drumsArrow.href = 'drums.html';
+      drumsArrow.style.position = 'relative';
+      drumsArrow.style.bottom = 'auto';
+      drumsArrow.style.left = 'auto';
+      drumsArrow.style.transform = 'none';
+      drumsArrow.innerHTML = `
+        <svg id="Drums_1" data-name="Drums 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
+          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="drums.svg"/>
+        </svg>
+      `;
+
       // Crear el botón "docs-arrow" para ir a docs.html
       const docsArrow = document.createElement('a');
       docsArrow.className = 'back-arrow';
@@ -690,12 +705,13 @@
         </svg>
       `;
 
-      // Agregar ambos botones al contenedor
+      // Agregar los tres botones al contenedor
       buttonsContainer.appendChild(forwardArrow);
+      buttonsContainer.appendChild(drumsArrow);
       buttonsContainer.appendChild(docsArrow);
       contenedor.insertAdjacentElement('afterend', buttonsContainer);
 
-      // Asegurar que ambos botones pasen los parámetros necesarios
+      // Asegurar que los tres botones pasen los parámetros necesarios
       const params = new URLSearchParams(window.location.search);
       const song = params.get('song');
       const cover = params.get('cover');
@@ -703,6 +719,7 @@
       const audioUrlParam = params.get('audio');
 
       forwardArrow.href = `lyrics.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
+      drumsArrow.href = `drums.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
       docsArrow.href = `docs.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
 
       // Verificar si el ID existe en lyrics.json antes de mostrar el botón "forward-arrow"
@@ -722,6 +739,27 @@
         })
         .catch(error => {
           console.error('Error al verificar el ID en lyrics.json:', error);
+          forwardArrow.style.display = 'none';
+        });
+
+      // Verificar si el ID existe en drums.json antes de mostrar el botón "drums-arrow"
+      fetch('drums.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error al cargar drums.json: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data[song]) {
+            drumsArrow.style.display = 'block';
+          } else {
+            drumsArrow.style.display = 'none';
+          }
+        })
+        .catch(error => {
+          console.error('Error al verificar el ID en drums.json:', error);
+          drumsArrow.style.display = 'none';
         });
 
       // Verificar si existe la carpeta docs/{song}/ antes de mostrar el botón "docs-arrow"
