@@ -813,16 +813,31 @@
         span.textContent = etiquetasGlobales[etiqueta] || etiqueta; // Usar etiqueta centralizada
         btn.appendChild(span);
         btn.onclick = () => {
+          const imageContainer = contenedor.querySelector('.section-image-container[data-section-index="' + index + '"]');
+          const img = imageContainer.querySelector('img.section-image');
+          // Si ya está seleccionada y el contenedor de imagen no está reducido, activar reducción
+          if (currentSectionIndex === index && !imageContainer.classList.contains('reducido')) {
+            imageContainer.classList.add('reducido');
+            img.style.display = 'none';
+            imageContainer.style.background = '#fff';
+            imageContainer.style.height = '10px';
+            imageContainer.style.transition = 'height 0.3s';
+            return;
+          } else if (currentSectionIndex === index && imageContainer.classList.contains('reducido')) {
+            // Si está reducido, restaurar
+            imageContainer.classList.remove('reducido');
+            img.style.display = '';
+            imageContainer.style.background = '#333';
+            imageContainer.style.height = '150px';
+            imageContainer.style.transition = 'height 0.3s';
+            return;
+          }
           audio.pause();
           audio.currentTime = Math.max(0, inicio - DESFASE); // Aplica el desfase aquí
           currentSectionIndex = index;
           seccionForzadaHasta = inicio; // Fuerza la selección hasta que el audio llegue a este punto
           actualizarBotonSeleccionado(audio.currentTime, true);
-          
-          // Marcar que se seleccionó manualmente para aplicar movimiento cuando se presione play
           currentActiveButton = btn;
-          
-          // Actualizar el icono de play
           const icon = document.getElementById('playPauseIcon');
           icon.innerHTML = `
             <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
@@ -861,16 +876,29 @@
         
         // Agregar evento click al contenedor de imagen para seleccionar la sección
         imageContainer.onclick = () => {
+          // Si ya está seleccionada y el contenedor de imagen no está reducido, activar reducción
+          if (currentSectionIndex === index && !imageContainer.classList.contains('reducido')) {
+            imageContainer.classList.add('reducido');
+            img.style.display = 'none';
+            imageContainer.style.background = '#fff';
+            imageContainer.style.height = '10px';
+            imageContainer.style.transition = 'height 0.3s';
+            return;
+          } else if (currentSectionIndex === index && imageContainer.classList.contains('reducido')) {
+            // Si está reducido, restaurar
+            imageContainer.classList.remove('reducido');
+            img.style.display = '';
+            imageContainer.style.background = '#333';
+            imageContainer.style.height = '150px';
+            imageContainer.style.transition = 'height 0.3s';
+            return;
+          }
           audio.pause();
           audio.currentTime = Math.max(0, inicio - DESFASE); // Aplica el desfase aquí
           currentSectionIndex = index;
           seccionForzadaHasta = inicio; // Fuerza la selección hasta que el audio llegue a este punto
           actualizarBotonSeleccionado(audio.currentTime, true);
-          
-          // Marcar que se seleccionó manualmente para aplicar movimiento cuando se presione play
           currentActiveButton = btn;
-          
-          // Actualizar el icono de play
           const icon = document.getElementById('playPauseIcon');
           icon.innerHTML = `
             <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
