@@ -850,8 +850,8 @@
           imageName = `${sectionNumber}.jpeg`;
         }
         
-        // Construir la ruta de la imagen en la carpeta drums
-        const imagePath = `drums/${imageName}`;
+        // Construir la ruta de la imagen en la carpeta drums con un parámetro para invalidar caché
+        const imagePath = `drums/${imageName}?v=${new Date().getTime()}`;
         img.src = imagePath;
         
         // Manejar error de carga de imagen
