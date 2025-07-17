@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Canciones</title>
+    <!-- La ruta es relativa a la carpeta 'admin', por lo que es correcta -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard de Administración Musical</h1>
+            <p>Visualiza y filtra tu colección de canciones.</p>
+        </header>
+
+        <!-- Sección de Filtros (sin cambios) -->
+        <section class="filtros">
+            <h2>🔍 Filtros Inteligentes</h2>
+            <form id="filter-form">
+                <div class="filter-group">
+                    <label for="artista-filter">Artista:</label>
+                    <select id="artista-filter" name="artista">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="tipo-filter">Tipo de Canción:</label>
+                    <select id="tipo-filter" name="tipo">
+                        <option value="all">Todos</option>
+                        <option value="Original">Original</option>
+                        <option value="Cover">Cover</option>
+                        <option value="Composición">Composición</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Duración:</label>
+                    <select id="duracion-filter" name="duracion">
+                        <option value="all">Cualquiera</option>
+                        <option value="60">&lt; 1 min</option>
+                        <option value="120">&lt; 2 min</option>
+                    </select>
+                </div>
+                <div class="filter-group checks">
+                    <label><input type="checkbox" id="con-letra-filter"> Con Letra</label>
+                    <label><input type="checkbox" id="con-drums-filter"> Con Drums</label>
+                </div>
+                 <button type="reset" id="reset-filters">Limpiar Filtros</button>
+            </form>
+        </section>
+
+        <!-- Sección de Estadísticas (sin cambios) -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <h3>Total de Canciones</h3>
+                    <span class="toggle-arrow">▶</span>
+                </div>
+                <div class="stat-card-content">
+                    <p id="total-canciones">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <h3>Distribución por Tipo</h3>
+                    <span class="toggle-arrow">▶</span>
+                </div>
+                <div class="stat-card-content">
+                    <div id="distribucion-tipo"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <h3>Canciones por Artista</h3>
+                    <span class="toggle-arrow">▶</span>
+                </div>
+                <div class="stat-card-content">
+                    <div id="canciones-por-artista"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <h3>Únicas</h3>
+                    <span class="toggle-arrow">▶</span>
+                </div>
+                <div class="stat-card-content">
+                    <div id="artistas-unicos"></div>
+                </div>
+            </div>
+             <div class="stat-card">
+                <div class="stat-card-header">
+                    <h3>Info Adicional</h3>
+                    <span class="toggle-arrow">▶</span>
+                </div>
+                <div class="stat-card-content">
+                    <ul id="stats-adicionales">
+                        <li id="sin-letra">Sin Letra: 0</li>
+                        <li id="sin-drums">Sin Drums: 0</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabla de Canciones (sin cambios) -->
+        <section class="tabla-canciones">
+            <div class="tabla-control-buttons">
+                <button id="toggle-all-covers" class="control-button">Ocultar todas las carátulas</button>
+            </div>
+            <table id="songs-table">
+                <thead>
+                    <tr>
+                        <th>Cover</th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Artista</th>
+                        <th>Tipo</th>
+                        <th>Duración</th>
+                        <th>Letra</th>
+                        <th>Drums</th>
+                        <th>Docs</th>
+                    </tr>
+                </thead>
+                <tbody id="songs-tbody">
+                    <!-- Las filas se insertan aquí -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <!-- La ruta es relativa a la carpeta 'admin', por lo que es correcta -->
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCardHeaders = document.querySelectorAll('.stat-card-header');
+
+            statCardHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const arrow = header.querySelector('.toggle-arrow');
+
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                        arrow.classList.remove('open');
+                    } else {
+                        content.style.display = 'block';
+                        arrow.classList.add('open');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
