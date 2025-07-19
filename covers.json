@@ -1,5 +1,5 @@
 {
-  "totalCovers": 94,
+  "totalCovers": 95,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "b"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "b"},
@@ -94,6 +94,7 @@
     {"id": 91, "nombre": "Capaz", "artista": "Eli y Ame", "tipo": "c"},
     {"id": 92, "nombre": "Llueve sobre la ciudad", "artista": "Josefa y Emilio", "tipo": "c"},
     {"id": 93, "nombre": "Panamericana", "artista": "Max", "tipo": "c"},
-    {"id": 94, "nombre": "Chipi Chipi", "artista": "Charly García", "tipo": "b"}
+    {"id": 94, "nombre": "Chipi Chipi", "artista": "Charly García", "tipo": "b"},
+    {"id": 95, "nombre": "Pedro's Lava Chicken", "artista": "Pedro", "tipo": "c"}
   ]
 }
