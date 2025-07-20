@@ -1020,37 +1020,35 @@
       }
       // Control del botón play/pause
       playPauseBtn.addEventListener('click', () => {
-        const icon = document.getElementById('playPauseIcon');
-        if (audio.paused) {
-          if (audioReady) {
-            // Al presionar play, la intención es reanudar el scroll automático.
-            // Limpiamos cualquier estado de "clic durante pausa".
-            sessionStorage.removeItem('clickDurantePausa');
-            scrollManualForzado = false;
-            isManualScrolling = false;
-            scrollAutomatico = true; // Se activa inmediatamente
+        if (audio.ended) {
+          // Si el audio ha terminado, lo reiniciamos y reproducimos
+          audio.currentTime = 0;
+          audio.play();
+        } else if (audio.paused) {
+          // Si está pausado, lo reproducimos
+          
+          // Al presionar play, la intención es reanudar el scroll automático.
+          sessionStorage.removeItem('clickDurantePausa');
+          scrollManualForzado = false;
+          isManualScrolling = false;
+          scrollAutomatico = true;
 
-            audio.play();
-          } else {
-            pendingPlay = true;
-          }
-          icon.innerHTML = `
+          audio.play();
+        } else {
+          // Si está reproduciendo, lo pausamos
+          audio.pause();
+        }
+      });
+
+      // Asegura que la clase se sincronice si el usuario usa otros métodos para pausar/reproducir
+      audio.addEventListener('play', () => {
+        playPauseBtn.innerHTML = `
+          <svg id="playPauseIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
             <rect x="34" y="33" width="14" height="42" rx="3" fill="#222"/>
             <rect x="60" y="33" width="14" height="42" rx="3" fill="#222"/>
-          `;
-          playPauseBtn.classList.add('playing');
-        } else {
-          audio.pause();
-          icon.innerHTML = `
-            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
-            <polygon points="42,33 81,54 42,75" fill="#222"/>
-          `;
-          playPauseBtn.classList.remove('playing');
-        }
-      });
-      // Asegura que la clase se sincronice si el usuario usa otros métodos para pausar/reproducir
-      audio.addEventListener('play', () => {
+          </svg>
+        `;
         playPauseBtn.classList.add('playing');
         
         const clickDurantePausa = sessionStorage.getItem('clickDurantePausa') === 'true';
@@ -1066,8 +1064,30 @@
         }
       });
       audio.addEventListener('pause', () => {
+        // No cambiamos el ícono si el audio ha terminado, porque 'ended' se encarga de eso.
+        if (!audio.ended) {
+          playPauseBtn.innerHTML = `
+            <svg id="playPauseIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+              <polygon points="42,33 81,54 42,75" fill="#222"/>
+            </svg>
+          `;
+        }
         playPauseBtn.classList.remove('playing');
         scrollAutomatico = false; // Desactivar scroll automático al pausar
+      });
+
+      // Cuando el audio termina
+      audio.addEventListener('ended', () => {
+        playPauseBtn.innerHTML = `
+          <svg id="replayIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <path d="M74 54C74 65.046 65.046 74 54 74C42.954 74 34 65.046 34 54C34 42.954 42.954 34 54 34" stroke="#222" stroke-width="6" stroke-linecap="round"/>
+            <polygon points="54,24 64,34 54,44" fill="#222"/>
+          </svg>
+        `;
+        playPauseBtn.classList.remove('playing');
+        scrollAutomatico = false;
       });
       // Control del botón rebobinar
       let rewinding = false;
