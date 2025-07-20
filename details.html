@@ -924,30 +924,54 @@
         if (e.buttons) actualizarBotonSeleccionado(seekBar.value);
       });
       playPauseBtn.addEventListener('click', () => {
-        const icon = document.getElementById('playPauseIcon');
-        if (audio.paused) {
+        if (audio.ended) {
+          audio.currentTime = 0;
+          audio.play();
+        } else if (audio.paused) {
           if (audioReady) {
             audio.play();
           } else {
             pendingPlay = true;
           }
-          icon.innerHTML = `
+        } else {
+          audio.pause();
+        }
+      });
+
+      audio.addEventListener('play', () => {
+        playPauseBtn.innerHTML = `
+          <svg id="playPauseIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
             <rect x="34" y="33" width="14" height="42" rx="3" fill="#222"/>
             <rect x="60" y="33" width="14" height="42" rx="3" fill="#222"/>
-          `;
-          playPauseBtn.classList.add('playing');
-        } else {
-          audio.pause();
-          icon.innerHTML = `
-            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
-            <polygon points="42,33 81,54 42,75" fill="#222"/>
-          `;
-          playPauseBtn.classList.remove('playing');
-        }
+          </svg>
+        `;
+        playPauseBtn.classList.add('playing');
       });
-      audio.addEventListener('play', () => playPauseBtn.classList.add('playing'));
-      audio.addEventListener('pause', () => playPauseBtn.classList.remove('playing'));
+
+      audio.addEventListener('pause', () => {
+        if (!audio.ended) {
+          playPauseBtn.innerHTML = `
+            <svg id="playPauseIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+              <polygon points="42,33 81,54 42,75" fill="#222"/>
+            </svg>
+          `;
+        }
+        playPauseBtn.classList.remove('playing');
+      });
+
+      audio.addEventListener('ended', () => {
+        playPauseBtn.innerHTML = `
+          <svg id="replayIcon" width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="54" cy="54" r="51" fill="white" stroke="#444" stroke-width="6"/>
+            <path d="M74 54C74 65.046 65.046 74 54 74C42.954 74 34 65.046 34 54C34 42.954 42.954 34 54 34" stroke="#222" stroke-width="6" stroke-linecap="round"/>
+            <polygon points="54,24 64,34 54,44" fill="#222"/>
+          </svg>
+        `;
+        playPauseBtn.classList.remove('playing');
+      });
+      
       let rewinding = false;
       let lastRewindTimestamp = null;
       function rewindStep(ts) {
