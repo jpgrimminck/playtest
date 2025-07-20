@@ -512,6 +512,16 @@
       opacity: 1; /* Texto activo será completamente visible */
       color: white; /* Color blanco para texto activo */
     }
+    
+    @keyframes flash-auto {
+      0% { background-color: rgba(255, 255, 255, 0); }
+      50% { background-color: rgba(255, 255, 255, 0.2); }
+      100% { background-color: rgba(255, 255, 255, 0); }
+    }
+    
+    .flash-scroll-auto {
+      animation: flash-auto 0.5s ease-in-out;
+    }
   </style>
 </head>
 <body>
@@ -595,11 +605,12 @@
     
     // Configuración para comportamiento consistente entre dispositivos
     const CONFIG = {
-      scrollBehavior: 'smooth',  // Usar 'auto' en lugar de 'smooth' para mayor consistencia
+      scrollBehavior: 'smooth',  // Usar 'smooth' para tener transiciones suaves en todos los dispositivos
       scrollDelay: 50,         // Pequeño retraso para permitir que el DOM se actualice
       buttonHeight: 60,        // Altura fija para todos los botones de secciones
       mobileScrollOffset: 100, // Ajuste de posición para dispositivos móviles
-      showSeekbar: false       // Ocultar la barra de progreso (seekbar)
+      showSeekbar: false,      // Ocultar la barra de progreso (seekbar)
+      scrollTransitionTime: 1000 // Tiempo de transición para el scroll automático (en ms)
     };
 
     // Obtener etiquetas desde la sección centralizada
@@ -694,6 +705,9 @@
     let currentSectionIndex = null;
     let seccionForzadaHasta = null;
     let isSeeking = false;
+    
+    // Variable para controlar el scroll automático de la letra
+    let scrollAutomatico = false; // Inicia desactivado y se activa al reproducir
 
     // Ocultar controles y mostrar mensaje de carga al inicio
     basicControls.style.display = 'none';
@@ -725,9 +739,13 @@
       // Asegurar que la velocidad se aplique cuando el audio esté listo
       audio.playbackRate = currentSpeed;
       
+      // Actualizar el estado del scroll automático según el estado del audio
+      scrollAutomatico = !audio.paused;
+      
       if (pendingPlay) {
         audio.play();
         pendingPlay = false;
+        scrollAutomatico = true;
       }
     });
 
@@ -1005,6 +1023,13 @@
         const icon = document.getElementById('playPauseIcon');
         if (audio.paused) {
           if (audioReady) {
+            // Al presionar play, la intención es reanudar el scroll automático.
+            // Limpiamos cualquier estado de "clic durante pausa".
+            sessionStorage.removeItem('clickDurantePausa');
+            scrollManualForzado = false;
+            isManualScrolling = false;
+            scrollAutomatico = true; // Se activa inmediatamente
+
             audio.play();
           } else {
             pendingPlay = true;
@@ -1025,8 +1050,25 @@
         }
       });
       // Asegura que la clase se sincronice si el usuario usa otros métodos para pausar/reproducir
-      audio.addEventListener('play', () => playPauseBtn.classList.add('playing'));
-      audio.addEventListener('pause', () => playPauseBtn.classList.remove('playing'));
+      audio.addEventListener('play', () => {
+        playPauseBtn.classList.add('playing');
+        
+        const clickDurantePausa = sessionStorage.getItem('clickDurantePausa') === 'true';
+        
+        if (clickDurantePausa) {
+          scrollAutomatico = false;
+          scrollManualForzado = true;
+        } else {
+          // Solo activa el scroll automático si no venimos de un "clic en pausa"
+          scrollAutomatico = true;
+          scrollManualForzado = false;
+          isManualScrolling = false;
+        }
+      });
+      audio.addEventListener('pause', () => {
+        playPauseBtn.classList.remove('playing');
+        scrollAutomatico = false; // Desactivar scroll automático al pausar
+      });
       // Control del botón rebobinar
       let rewinding = false;
       let lastRewindTimestamp = null;
@@ -1470,14 +1512,66 @@
       audio.currentTime = tiempoConDesfase; // Ajusta el tiempo del audio
       seekBar.value = tiempoConDesfase; // Actualiza el slider
       actualizarBotonSeleccionado(tiempoConDesfase); // Actualiza los botones de sección
-      actualizarLineaActiva(tiempoConDesfase); // Actualiza la línea activa
+      
+      // Obtener la línea correspondiente
+      const lineasDOM = document.querySelectorAll('.linea');
+      let lineaSeleccionada = null;
+      
+      // Buscar la línea correspondiente al tiempo seleccionado
+      const tiempoConDesfaseTexto = tiempoConDesfase - DESFASE_TEXTO;
+      lineas.forEach((linea, index) => {
+        const siguienteLinea = lineas[index + 1];
+        if (tiempoConDesfaseTexto >= linea.tiempo && (!siguienteLinea || tiempoConDesfaseTexto < siguienteLinea.tiempo)) {
+          lineaSeleccionada = lineasDOM[index];
+        }
+      });
+      
+      if (lineaSeleccionada) {
+        // Actualizar la clase activa en todas las líneas
+        lineasDOM.forEach(linea => linea.classList.remove('activa'));
+        lineaSeleccionada.classList.add('activa');
+        
+        // Realizar el scroll suave hacia la línea seleccionada SOLO si el audio se está reproduciendo
+        if (!audio.paused) {
+          const container = document.querySelector('.fixed-text-container');
+          if (container) {
+            const targetScrollTop = lineaSeleccionada.offsetTop - 200; // Cambiado a 200px desde el top
+
+            // Usar animación suave para el scroll
+            container.scrollTo({
+              top: targetScrollTop,
+              behavior: CONFIG.scrollBehavior
+            });
+          }
+        }
+        
+        if (audio.paused) {
+          // Si está en pausa y se hace clic en una línea, forzar el modo de scroll manual
+          scrollManualForzado = true;
+          scrollAutomatico = false; // Asegurarse de que el scroll automático esté desactivado
+          
+          // Guardar en sessionStorage que el usuario ha hecho un clic durante pausa
+          sessionStorage.setItem('clickDurantePausa', 'true');
+        } else {
+          // Si está reproduciendo, desactivar temporalmente el scroll automático
+          // para permitir que esta línea seleccionada sea visible
+          scrollManualForzado = true;
+          setTimeout(() => {
+            scrollManualForzado = false;
+          }, 2000); // 2 segundos antes de reactivar el scroll automático
+        }
+      }
+      
+      // Actualizar el estado de la línea activa (ahora solo para estado interno)
+      actualizarLineaActiva(tiempoConDesfase, true); // Pasamos true para indicar que no debe hacer scroll
     }
 
     // Variables para controlar el scroll manual
     let scrollTextTimeout = null;
     let isManualScrolling = false;
+    let scrollManualForzado = false; // Nueva variable para forzar scroll manual
 
-    function actualizarLineaActiva(tiempoActual) {
+    function actualizarLineaActiva(tiempoActual, skipScroll = false) {
       const lineasDOM = document.querySelectorAll('.linea');
       let lineaActiva = null;
 
@@ -1497,54 +1591,97 @@
       if (lineaActiva) {
         lineaActiva.classList.add('activa');
 
-        // Solo centra si no hay scroll manual activo
-        if (!isManualScrolling) {
-          // Usar comportamiento consistente para el scroll
-          lineaActiva.scrollIntoView({
-            behavior: CONFIG.scrollBehavior,
-            block: 'center'
-          });
-          
-          // Ajuste adicional para dispositivos móviles
-          setTimeout(() => {
-            if (window.innerWidth <= 768 && lineaActiva.offsetTop > 0) { 
-              const container = document.querySelector('.fixed-text-container');
-              if (container) {
-                // Aplicar un ajuste fino a la posición de scroll
-                container.scrollTop = lineaActiva.offsetTop - (container.clientHeight / 2) + (lineaActiva.offsetHeight / 2);
-              }
+        if (skipScroll) {
+          return;
+        }
+
+        if (scrollAutomatico && !isManualScrolling && !scrollManualForzado) {
+          const container = document.querySelector('.fixed-text-container');
+          if (container) {
+            const targetScrollTop = lineaActiva.offsetTop - 200;
+            const currentScrollTop = container.scrollTop;
+            const scrollDifference = Math.abs(currentScrollTop - targetScrollTop);
+
+            if (scrollDifference > 30) {
+              container.scrollTo({
+                top: targetScrollTop,
+                behavior: CONFIG.scrollBehavior
+              });
             }
-          }, CONFIG.scrollDelay);
+          }
         }
       }
     }
 
     // Agregar detector de scroll manual en el contenedor de texto
     document.addEventListener('DOMContentLoaded', () => {
+      // Al cargar la página, limpiar cualquier estado anterior de clic durante pausa
+      sessionStorage.removeItem('clickDurantePausa');
+      
       const letraContainer = document.querySelector('.fixed-text-container');
       
       // Detectar cuando el usuario hace scroll manualmente
       letraContainer.addEventListener('scroll', () => {
         isManualScrolling = true;
         
-        // Cancelar cualquier temporizador existente
         if (scrollTextTimeout) {
           clearTimeout(scrollTextTimeout);
         }
         
-        // Crear nuevo temporizador
+        // Si el usuario hace scroll, es una acción explícita para tomar el control.
+        // Reactivamos el scroll automático después de un tiempo.
+        sessionStorage.removeItem('clickDurantePausa');
+        scrollManualForzado = false;
+
         scrollTextTimeout = setTimeout(() => {
           isManualScrolling = false;
-          
-          // Volver a centrar la línea activa después del tiempo de espera
-          const lineaActiva = document.querySelector('.linea.activa');
-          if (lineaActiva) {
-            lineaActiva.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
+          // Si el audio está reproduciéndose, reactivamos el scroll automático
+          if (!audio.paused) {
+            scrollAutomatico = true;
           }
-        }, 3000); // 3 segundos de espera
+        }, 1500);
+      });
+      
+      // Agregar detector de doble toque para reactivar el scroll automático si el usuario lo desea
+      let lastTapTime = 0;
+      letraContainer.addEventListener('click', (event) => {
+        // No procesar más si se hizo clic en una línea (ya que eso se maneja en moverACodigoDeTiempo)
+        if (event.target.closest('.linea')) {
+          return;
+        }
+        
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < 500 && tapLength > 0) {
+          // Doble clic/toque detectado
+          event.preventDefault();
+          
+          // Reactivar el scroll automático SOLO si está reproduciendo
+          if (!audio.paused) {
+            scrollAutomatico = true;
+            scrollManualForzado = false;
+            isManualScrolling = false;
+            
+            // Limpiar bandera de clic durante pausa
+            sessionStorage.removeItem('clickDurantePausa');
+            
+            // Actualizar la línea activa con la posición actual
+            actualizarLineaActiva(audio.currentTime);
+            
+            // Notificación visual de que se reactivó el scroll automático (opcional)
+            const container = document.querySelector('.fixed-text-container');
+            if (container) {
+              container.classList.add('flash-scroll-auto');
+              setTimeout(() => {
+                container.classList.remove('flash-scroll-auto');
+              }, 500);
+            }
+          }
+          // Si está pausado, no hacemos nada - el scroll automático debe permanecer desactivado
+        }
+        
+        lastTapTime = currentTime;
       });
     });
   </script>
