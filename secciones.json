@@ -13,6 +13,11 @@
     { "etiqueta": "pre-coro", "inicio": 142.2 },
     { "etiqueta": "coda", "inicio": 160.3 }
   ],
+  "97": [
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 13.4 },
+    { "etiqueta": "estrofa", "inicio": 32.9 }
+  ],
   "96": [
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 18.1 },
