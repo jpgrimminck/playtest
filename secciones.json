@@ -1,4 +1,20 @@
 {
+    "99": [
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 6.6 },
+    { "etiqueta": "estrofa", "inicio": 19.6 },
+    { "etiqueta": "coro", "inicio": 32.4 },
+    { "etiqueta": "estrofa", "inicio": 45.3 },
+    { "etiqueta": "estrofa", "inicio": 57.8 },
+    { "etiqueta": "coro", "inicio": 71 },
+    { "etiqueta": "estrofa", "inicio": 84 },
+    { "etiqueta": "instrumental", "inicio": 96.7 },
+    { "etiqueta": "estrofa", "inicio": 103.2 },
+    { "etiqueta": "estrofa", "inicio": 116.2 },
+    { "etiqueta": "coro", "inicio": 129 },
+    { "etiqueta": "coro", "inicio": 141.9 },
+    { "etiqueta": "coro", "inicio": 154.8 }
+  ],
   "98": [
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 10.9 },
