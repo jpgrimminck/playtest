@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filter-form');
     const songsTbody = document.getElementById('songs-tbody');
     const artistaFilter = document.getElementById('artista-filter');
+    const artistaUnicoFilter = document.getElementById('artista-unico-filter');
     const totalCancionesEl = document.getElementById('total-canciones');
     const cancionesPorArtistaEl = document.getElementById('canciones-por-artista');
     const artistasUnicosEl = document.getElementById('artistas-unicos');
@@ -163,12 +164,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // una vez que ha sido procesado.
 
     function populateFilters(songs) {
-        const artistas = [...new Set(songs.map(song => song.nombreArtista))].sort();
-        artistas.forEach(artista => {
+        // Contar canciones por artista
+        const cancionesPorArtista = songs.reduce((acc, song) => {
+            acc[song.nombreArtista] = (acc[song.nombreArtista] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Separar artistas con múltiples canciones y artistas únicos
+        const artistasMultiples = Object.keys(cancionesPorArtista)
+            .filter(artista => cancionesPorArtista[artista] >= 2)
+            .sort();
+        
+        const artistasUnicos = Object.keys(cancionesPorArtista)
+            .filter(artista => cancionesPorArtista[artista] === 1)
+            .sort();
+
+        // Limpiar opciones existentes (excepto "Todos")
+        artistaFilter.innerHTML = '<option value="all">Todos</option>';
+        artistaUnicoFilter.innerHTML = '<option value="all">Todos</option>';
+
+        // Poblar filtro de artistas (solo con 2+ canciones)
+        artistasMultiples.forEach(artista => {
             const option = document.createElement('option');
             option.value = artista;
             option.textContent = artista;
             artistaFilter.appendChild(option);
+        });
+
+        // Poblar filtro de artistas únicos (solo con 1 canción)
+        artistasUnicos.forEach(artista => {
+            const option = document.createElement('option');
+            option.value = artista;
+            option.textContent = artista;
+            artistaUnicoFilter.appendChild(option);
         });
     }
 
@@ -210,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(filterForm);
         const filters = {
             artista: formData.get('artista'),
+            artistaUnico: formData.get('artistaUnico'),
             tipo: formData.get('tipo'),
             duracion: parseInt(formData.get('duracion'), 10),
             conLetra: document.getElementById('con-letra-filter').checked,
@@ -220,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filteredSongs = allSongsData.filter(song => {
             if (filters.artista !== 'all' && song.nombreArtista !== filters.artista) return false;
+            if (filters.artistaUnico !== 'all' && song.nombreArtista !== filters.artistaUnico) return false;
             if (filters.tipo !== 'all' && song.tipoCancion !== filters.tipo) return false;
             if (!isNaN(filters.duracion) && song.duracionAudio >= filters.duracion) return false;
             if (filters.conLetra && !song.letra) return false;

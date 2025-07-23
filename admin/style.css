@@ -90,6 +90,44 @@ header h1 {
     font-weight: normal;
 }
 
+/* Secciones consolidadas de estadísticas */
+.stats-consolidated {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.stats-section {
+    padding: 15px;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.stats-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stats-section div, .stats-section ul {
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+.stats-section ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stats-section ul li {
+    margin-bottom: 5px;
+}
+
 /* Filtros */
 .filtros {
     background-color: var(--card-bg-color);

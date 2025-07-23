@@ -25,6 +25,12 @@
                     </select>
                 </div>
                 <div class="filter-group">
+                    <label for="artista-unico-filter">Artista Único:</label>
+                    <select id="artista-unico-filter" name="artistaUnico">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <label for="tipo-filter">Tipo de Canción:</label>
                     <select id="tipo-filter" name="tipo">
                         <option value="all">Todos</option>
@@ -51,7 +57,7 @@
             </form>
         </section>
 
-        <!-- Sección de Estadísticas (sin cambios) -->
+        <!-- Sección de Estadísticas -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="stat-card-header no-toggle">
@@ -63,42 +69,32 @@
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
-                    <h3>Distribución por Tipo</h3>
+                    <h3>Estadísticas Detalladas</h3>
                     <span class="toggle-arrow">▶</span>
                 </div>
-                <div class="stat-card-content">
-                    <div id="distribucion-tipo"></div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <h3>Canciones por Artista</h3>
-                    <span class="toggle-arrow">▶</span>
-                </div>
-                <div class="stat-card-content">
-                    <div id="canciones-por-artista"></div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <h3>Únicas</h3>
-                    <span class="toggle-arrow">▶</span>
-                </div>
-                <div class="stat-card-content">
-                    <div id="artistas-unicos"></div>
-                </div>
-            </div>
-             <div class="stat-card">
-                <div class="stat-card-header">
-                    <h3>Info Adicional</h3>
-                    <span class="toggle-arrow">▶</span>
-                </div>
-                <div class="stat-card-content">
-                    <ul id="stats-adicionales">
-                        <li id="sin-letra">Sin Letra: 0</li>
-                        <li id="sin-drums">Sin Drums: 0</li>
-                        <li id="sin-secciones">Sin Secciones: 0</li>
-                    </ul>
+                <div class="stat-card-content" style="display: none;">
+                    <div class="stats-consolidated">
+                        <div class="stats-section">
+                            <h4>Distribución por Tipo</h4>
+                            <div id="distribucion-tipo"></div>
+                        </div>
+                        <div class="stats-section">
+                            <h4>Canciones por Artista</h4>
+                            <div id="canciones-por-artista"></div>
+                        </div>
+                        <div class="stats-section">
+                            <h4>Únicas</h4>
+                            <div id="artistas-unicos"></div>
+                        </div>
+                        <div class="stats-section">
+                            <h4>Info Adicional</h4>
+                            <ul id="stats-adicionales">
+                                <li id="sin-letra">Sin Letra: 0</li>
+                                <li id="sin-drums">Sin Drums: 0</li>
+                                <li id="sin-secciones">Sin Secciones: 0</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
