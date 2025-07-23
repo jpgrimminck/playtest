@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const distribucionTipoEl = document.getElementById('distribucion-tipo');
     const sinLetraEl = document.getElementById('sin-letra');
     const sinDrumsEl = document.getElementById('sin-drums');
+    const sinSeccionesEl = document.getElementById('sin-secciones');
     const resetFiltersBtn = document.getElementById('reset-filters');
 
     let allSongsData = [];
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             duracionFormateada: formatDuration(durationInSeconds),
             secciones: secciones,
             cantidadSecciones: secciones.length,
+            tieneSecciones: secciones.length > 0,
             letra: letra.length > 0,
             drums: !!drumsData[id],
             docs: tieneDocs,
@@ -99,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displaySongs(songs) {
         songsTbody.innerHTML = '';
         if (songs.length === 0) {
-            songsTbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">No se encontraron canciones con los filtros seleccionados.</td></tr>`;
+            songsTbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No se encontraron canciones con los filtros seleccionados.</td></tr>`;
             return;
         }
 
@@ -120,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Artista"><span>${song.nombreArtista}</span></td>
                 <td data-label="Tipo"><span>${song.tipoCancion}</span></td>
                 <td data-label="Duración"><span>${song.duracionFormateada}</span></td>
+                <td data-label="Secciones"><span class="indicator ${song.tieneSecciones ? 'success' : 'error'}">${song.tieneSecciones ? '✔️' : '❌'}</span></td>
                 <td data-label="Letra"><span class="indicator ${song.letra ? 'success' : 'error'}">${song.letra ? '✔️' : '❌'}</span></td>
                 <td data-label="Drums"><span class="indicator ${song.drums ? 'success' : 'error'}">${song.drums ? '✔️' : '❌'}</span></td>
                 <td data-label="Docs"><span class="indicator ${song.docs ? 'success' : 'error'}">${song.docs ? '✔️' : '❌'}</span></td>
@@ -173,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalCancionesEl.textContent = songs.length;
         sinLetraEl.textContent = `Sin Letra: ${songs.filter(s => !s.letra).length}`;
         sinDrumsEl.textContent = `Sin Drums: ${songs.filter(s => !s.drums).length}`;
+        sinSeccionesEl.textContent = `Sin Secciones: ${songs.filter(s => !s.tieneSecciones).length}`;
         
         const porArtista = songs.reduce((acc, song) => {
             acc[song.nombreArtista] = (acc[song.nombreArtista] || 0) + 1;
@@ -210,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             duracion: parseInt(formData.get('duracion'), 10),
             conLetra: document.getElementById('con-letra-filter').checked,
             conDrums: document.getElementById('con-drums-filter').checked,
+            conSecciones: document.getElementById('con-secciones-filter').checked,
         };
 
         const filteredSongs = allSongsData.filter(song => {
@@ -218,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isNaN(filters.duracion) && song.duracionAudio >= filters.duracion) return false;
             if (filters.conLetra && !song.letra) return false;
             if (filters.conDrums && !song.drums) return false;
+            if (filters.conSecciones && !song.tieneSecciones) return false;
             return true;
         });
 
