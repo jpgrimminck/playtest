@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const getTipoCancion = (tipo) => {
             switch (tipo) {
-                case 'a': return 'Original';
-                case 'b': return 'Cover';
-                case 'c': return 'Composición';
+                case 'y': return 'Youtube';
+                case 'i': return 'Inéditas';
+                case 'c': return 'Covers';
                 default: return 'Desconocido';
             }
         };
