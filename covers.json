@@ -1,5 +1,5 @@
 {
-  "totalCovers": 96,
+  "totalCovers": 97,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "b"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "b"},
@@ -96,6 +96,7 @@
     {"id": 93, "nombre": "Panamericana", "artista": "Max", "tipo": "c"},
     {"id": 94, "nombre": "Chipi Chipi", "artista": "Charly García", "tipo": "b"},
     {"id": 95, "nombre": "Pedro's Lava Chicken", "artista": "Pedro", "tipo": "c"},
-    {"id": 96, "nombre": "Fast Car", "artista": "Tracy Chapman", "tipo": "b"}
+    {"id": 96, "nombre": "Fast Car", "artista": "Tracy Chapman", "tipo": "b"},
+    {"id": 97, "nombre": "Los pollitos dicen", "artista": "Violetta", "tipo": "c"}
   ]
 }
