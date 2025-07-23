@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             conLetra: document.getElementById('con-letra-filter').checked,
             conDrums: document.getElementById('con-drums-filter').checked,
             conSecciones: document.getElementById('con-secciones-filter').checked,
+            sinSecciones: document.getElementById('sin-secciones-filter').checked,
         };
 
         const filteredSongs = allSongsData.filter(song => {
@@ -224,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (filters.conLetra && !song.letra) return false;
             if (filters.conDrums && !song.drums) return false;
             if (filters.conSecciones && !song.tieneSecciones) return false;
+            if (filters.sinSecciones && song.tieneSecciones) return false;
             return true;
         });
 

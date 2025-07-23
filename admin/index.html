@@ -45,6 +45,7 @@
                     <label><input type="checkbox" id="con-letra-filter"> Con Letra</label>
                     <label><input type="checkbox" id="con-drums-filter"> Con Drums</label>
                     <label><input type="checkbox" id="con-secciones-filter"> Con Secciones</label>
+                    <label><input type="checkbox" id="sin-secciones-filter"> Sin Secciones</label>
                 </div>
                  <button type="reset" id="reset-filters">Limpiar Filtros</button>
             </form>
@@ -53,11 +54,10 @@
         <!-- Sección de Estadísticas (sin cambios) -->
         <section class="stats-grid">
             <div class="stat-card">
-                <div class="stat-card-header">
+                <div class="stat-card-header no-toggle">
                     <h3>Total de Canciones</h3>
-                    <span class="toggle-arrow">▶</span>
                 </div>
-                <div class="stat-card-content">
+                <div class="stat-card-content always-visible" style="display: block !important;">
                     <p id="total-canciones">0</p>
                 </div>
             </div>
@@ -133,7 +133,8 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const statCardHeaders = document.querySelectorAll('.stat-card-header');
+            // Solo aplicar toggle a las tarjetas que NO tienen la clase 'no-toggle'
+            const statCardHeaders = document.querySelectorAll('.stat-card-header:not(.no-toggle)');
 
             statCardHeaders.forEach(header => {
                 header.addEventListener('click', () => {
