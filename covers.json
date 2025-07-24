@@ -1,5 +1,5 @@
 {
-  "totalCovers": 100,
+  "totalCovers": 101,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -100,6 +100,7 @@
     {"id": 97, "nombre": "Los pollitos dicen", "artista": "Violetta", "tipo": "c"},
     {"id": 98, "nombre": "American Idiot", "artista": "Green Day", "tipo": "y"},
     {"id": 99, "nombre": "APT", "artista": "ROSÉ y Bruno Mars", "tipo": "y"},
-    {"id": 100, "nombre": "Never Grow Up", "artista": "Clarita", "tipo": "c"}
+    {"id": 100, "nombre": "Never Grow Up", "artista": "Clarita", "tipo": "c"},
+    {"id": 101, "nombre": "Supa Good", "artista": "Clemente", "tipo": "c"}
   ]
 }
