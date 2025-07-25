@@ -278,6 +278,65 @@ button[type="reset"] {
 .indicator.success { color: var(--success-color); }
 .indicator.error { color: var(--error-color); }
 
+/* Botones de Play */
+.play-cell {
+    text-align: center;
+}
+
+.play-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.play-btn:hover {
+    background-color: var(--bg-color);
+    transform: scale(1.1);
+}
+
+.play-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.play-btn.playing {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.play-btn.playing:hover {
+    background-color: #2980b9;
+}
+
+.play-icon {
+    font-size: 1.2rem;
+    transition: transform 0.1s ease;
+}
+
+/* Mejor feedback visual para móviles */
+@media (max-width: 768px) {
+    .play-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+    
+    .play-btn:active {
+        transform: scale(0.95);
+        background-color: var(--accent-color);
+        color: white;
+    }
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
     body { padding: 10px; }
@@ -342,7 +401,7 @@ button[type="reset"] {
     
     /* Celdas de datos generales */
     #songs-table td:not(.cover-cell) {
-        flex: 1 0 25%; /* 4 columnas = 25% cada una */
+        flex: 1 0 20%; /* 5 columnas = 20% cada una */
         padding: 8px 6px;
         text-align: center;
         border-right: 1px solid #f0f0f0;
@@ -352,19 +411,25 @@ button[type="reset"] {
     }
     
     /* Para que en la última fila no haya border-bottom */
-    #songs-table td:nth-last-child(-n+4) {
+    #songs-table td:nth-last-child(-n+5) {
         border-bottom: none;
     }
     
     /* Para que en la última columna de cada fila no haya border-right */
-    #songs-table td:nth-child(4n+1) {
+    #songs-table td:nth-child(5n+1) {
         border-right: none;
     }
     
     /* ID celda más pequeña */
     #songs-table td[data-label="ID"] {
-        flex: 0 0 20%;
+        flex: 0 0 15%;
         min-width: 40px;
+    }
+    
+    /* Play celda más pequeña */
+    #songs-table td[data-label="Play"] {
+        flex: 0 0 15%;
+        min-width: 50px;
     }
     
     #songs-table td:not(.cover-cell)::before {
@@ -374,6 +439,11 @@ button[type="reset"] {
         margin-bottom: 4px;
         color: var(--secondary-text);
         font-size: 0.8em;
+    }
+    
+    /* No mostrar label para el botón de play */
+    #songs-table td[data-label="Play"]::before {
+        display: none;
     }
     
     #songs-table td > span {

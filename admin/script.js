@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetFiltersBtn = document.getElementById('reset-filters');
 
     let allSongsData = [];
+    let currentAudio = null; // Para controlar el audio actual
 
     // --- 1. CARGA Y PROCESAMIENTO DE DATOS ---
 
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displaySongs(songs) {
         songsTbody.innerHTML = '';
         if (songs.length === 0) {
-            songsTbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No se encontraron canciones con los filtros seleccionados.</td></tr>`;
+            songsTbody.innerHTML = `<tr><td colspan="11" style="text-align:center;">No se encontraron canciones con los filtros seleccionados.</td></tr>`;
             return;
         }
 
@@ -123,6 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Artista"><span>${song.nombreArtista}</span></td>
                 <td data-label="Tipo"><span>${song.tipoCancion}</span></td>
                 <td data-label="Duración"><span>${song.duracionFormateada}</span></td>
+                <td data-label="Play" class="play-cell">
+                    <button class="play-btn" data-song-id="${song.idCover}">
+                        <span class="play-icon">▶️</span>
+                    </button>
+                </td>
                 <td data-label="Secciones"><span class="indicator ${song.tieneSecciones ? 'success' : 'error'}">${song.tieneSecciones ? '✔️' : '❌'}</span></td>
                 <td data-label="Letra"><span class="indicator ${song.letra ? 'success' : 'error'}">${song.letra ? '✔️' : '❌'}</span></td>
                 <td data-label="Drums"><span class="indicator ${song.drums ? 'success' : 'error'}">${song.drums ? '✔️' : '❌'}</span></td>
@@ -138,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             // Permitir que al hacer clic en cualquier celda se muestre la carátula
-            const allCells = row.querySelectorAll('td:not(.cover-cell)');
+            const allCells = row.querySelectorAll('td:not(.cover-cell):not(.play-cell)');
             const coverImg = row.querySelector('.cover-img');
             
             allCells.forEach(cell => {
@@ -147,6 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         coverImg.classList.remove('cover-hidden');
                     }
                 });
+            });
+
+            // Añadir evento para el botón de play
+            const playBtn = row.querySelector('.play-btn');
+            playBtn.addEventListener('click', function() {
+                toggleAudio(song.idCover, this);
             });
         });
         
@@ -162,6 +174,147 @@ document.addEventListener('DOMContentLoaded', () => {
     // El resto de las funciones (populateFilters, updateStatistics, applyFilters) y
     // los event listeners no necesitan cambios, ya que operan sobre el objeto `allSongsData`
     // una vez que ha sido procesado.
+
+    // --- 3. FUNCIONALIDAD DE REPRODUCCIÓN DE AUDIO ---
+
+    function toggleAudio(songId, buttonElement) {
+        const playIcon = buttonElement.querySelector('.play-icon');
+        
+        // Si hay un audio reproduciéndose y es diferente al actual
+        if (currentAudio && currentAudio.songId !== songId) {
+            stopCurrentAudio();
+        }
+
+        // Si no hay audio actual o es una canción diferente, reproducir
+        if (!currentAudio || currentAudio.songId !== songId) {
+            playAudio(songId, buttonElement);
+        } else {
+            // Si es la misma canción, pausar/reanudar
+            if (currentAudio.audio.paused) {
+                const playPromise = currentAudio.audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        playIcon.textContent = '⏸️';
+                        buttonElement.classList.add('playing');
+                    }).catch((error) => {
+                        console.error(`Error al reanudar audio ${songId}:`, error);
+                        playIcon.textContent = '❌';
+                        buttonElement.classList.remove('playing');
+                        setTimeout(() => {
+                            playIcon.textContent = '▶️';
+                        }, 2000);
+                    });
+                }
+            } else {
+                currentAudio.audio.pause();
+                playIcon.textContent = '▶️';
+                buttonElement.classList.remove('playing');
+            }
+        }
+    }
+
+    function playAudio(songId, buttonElement) {
+        const playIcon = buttonElement.querySelector('.play-icon');
+        const audioPath = `../songs/${songId}.mp3`;
+        
+        // Crear nuevo elemento de audio
+        const audio = new Audio();
+        
+        // Actualizar el estado del botón a "cargando"
+        playIcon.textContent = '⏳';
+        buttonElement.disabled = true;
+
+        // Timeout para evitar carga infinita (15 segundos)
+        const loadTimeout = setTimeout(() => {
+            console.error(`Timeout al cargar audio ${songId}`);
+            playIcon.textContent = '❌';
+            buttonElement.disabled = false;
+            buttonElement.classList.remove('playing');
+            setTimeout(() => {
+                playIcon.textContent = '▶️';
+            }, 2000);
+        }, 15000);
+
+        // Configurar eventos antes de cargar el audio
+        audio.addEventListener('loadstart', function() {
+            console.log(`Iniciando carga de audio ${songId}`);
+        });
+
+        audio.addEventListener('canplay', function() {
+            console.log(`Audio ${songId} listo para reproducir`);
+            clearTimeout(loadTimeout); // Cancelar timeout
+            buttonElement.disabled = false;
+            playIcon.textContent = '⏸️';
+            buttonElement.classList.add('playing');
+            
+            // Intentar reproducir
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(function(error) {
+                    console.error(`Error al reproducir audio ${songId}:`, error);
+                    playIcon.textContent = '❌';
+                    buttonElement.classList.remove('playing');
+                    setTimeout(() => {
+                        playIcon.textContent = '▶️';
+                        buttonElement.disabled = false;
+                    }, 2000);
+                });
+            }
+        });
+
+        audio.addEventListener('error', function(e) {
+            console.error(`Error al cargar el audio ${songId}:`, e);
+            clearTimeout(loadTimeout); // Cancelar timeout
+            playIcon.textContent = '❌';
+            buttonElement.disabled = false;
+            buttonElement.classList.remove('playing');
+            setTimeout(() => {
+                playIcon.textContent = '▶️';
+            }, 2000);
+        });
+
+        audio.addEventListener('ended', function() {
+            playIcon.textContent = '▶️';
+            buttonElement.classList.remove('playing');
+            currentAudio = null;
+        });
+
+        audio.addEventListener('pause', function() {
+            if (audio.currentTime === 0) return;
+            playIcon.textContent = '▶️';
+            buttonElement.classList.remove('playing');
+        });
+
+        audio.addEventListener('play', function() {
+            playIcon.textContent = '⏸️';
+            buttonElement.classList.add('playing');
+        });
+
+        // Configurar audio para móviles
+        audio.preload = 'none'; // No precargar
+        audio.crossOrigin = 'anonymous'; // Para evitar problemas de CORS
+        
+        // Establecer la fuente y cargar
+        audio.src = audioPath;
+        audio.load();
+
+        currentAudio = {
+            audio: audio,
+            songId: songId,
+            button: buttonElement
+        };
+    }
+
+    function stopCurrentAudio() {
+        if (currentAudio) {
+            currentAudio.audio.pause();
+            currentAudio.audio.currentTime = 0;
+            const playIcon = currentAudio.button.querySelector('.play-icon');
+            playIcon.textContent = '▶️';
+            currentAudio.button.classList.remove('playing');
+            currentAudio = null;
+        }
+    }
 
     function populateFilters(songs) {
         // Contar canciones por artista
