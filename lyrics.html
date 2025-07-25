@@ -610,7 +610,9 @@
       buttonHeight: 60,        // Altura fija para todos los botones de secciones
       mobileScrollOffset: 100, // Ajuste de posición para dispositivos móviles
       showSeekbar: false,      // Ocultar la barra de progreso (seekbar)
-      scrollTransitionTime: 1000 // Tiempo de transición para el scroll automático (en ms)
+      scrollTransitionTime: 1000, // Tiempo de transición para el scroll automático (en ms)
+      minSpeed: 0.8,          // Velocidad mínima permitida (0.6 = 60%, 0.8 = 80%, etc.)
+      maxSpeed: 1.0           // Velocidad máxima permitida (1.0 = 100%)
     };
 
     // Obtener etiquetas desde la sección centralizada
@@ -1269,7 +1271,7 @@
 
     // Función para actualizar la visualización del slider
     function updateSliderVisual(value) {
-      const percentage = ((value - 0.6) / (1.0 - 0.6)) * 100;
+      const percentage = ((value - CONFIG.minSpeed) / (CONFIG.maxSpeed - CONFIG.minSpeed)) * 100;
       speedSliderFill.style.height = percentage + '%';
     }
 
@@ -1285,7 +1287,7 @@
       }
       
       speedUpdateTimeout = setTimeout(() => {
-        if (audio && speed >= 0.6 && speed <= 1.0) {
+        if (audio && speed >= CONFIG.minSpeed && speed <= CONFIG.maxSpeed) {
           currentSpeed = speed;
           const wasPlaying = !audio.paused;
           
@@ -1306,7 +1308,7 @@
 
     // Función simple para actualizar velocidad sin interrumpir reproducción
     function updateSpeed(speed) {
-      if (audio && speed >= 0.6 && speed <= 1.0) {
+      if (audio && speed >= CONFIG.minSpeed && speed <= CONFIG.maxSpeed) {
         // En dispositivos móviles, usar la función optimizada con debounce
         if (isMobile()) {
           updateSpeedMobile(speed);
@@ -1325,9 +1327,9 @@
     speedSliderContainer.addEventListener('click', (e) => {
       const rect = speedSliderContainer.getBoundingClientRect();
       const y = e.clientY - rect.top;
-      const percentage = 1 - (y / rect.height); // Invertir porque queremos que abajo sea 0.6 y arriba 1.0
-      const value = 0.6 + (percentage * (1.0 - 0.6));
-      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      const percentage = 1 - (y / rect.height); // Invertir porque queremos que abajo sea minSpeed y arriba maxSpeed
+      const value = CONFIG.minSpeed + (percentage * (CONFIG.maxSpeed - CONFIG.minSpeed));
+      const clampedValue = Math.max(CONFIG.minSpeed, Math.min(CONFIG.maxSpeed, value));
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
@@ -1345,8 +1347,8 @@
       const rect = speedSliderContainer.getBoundingClientRect();
       const y = e.clientY - rect.top;
       const percentage = 1 - (y / rect.height);
-      const value = 0.6 + (percentage * (1.0 - 0.6));
-      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      const value = CONFIG.minSpeed + (percentage * (CONFIG.maxSpeed - CONFIG.minSpeed));
+      const clampedValue = Math.max(CONFIG.minSpeed, Math.min(CONFIG.maxSpeed, value));
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
@@ -1368,8 +1370,8 @@
       const rect = speedSliderContainer.getBoundingClientRect();
       const y = e.clientY - rect.top;
       const percentage = 1 - (y / rect.height);
-      const value = 0.6 + (percentage * (1.0 - 0.6));
-      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      const value = CONFIG.minSpeed + (percentage * (CONFIG.maxSpeed - CONFIG.minSpeed));
+      const clampedValue = Math.max(CONFIG.minSpeed, Math.min(CONFIG.maxSpeed, value));
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
@@ -1390,8 +1392,8 @@
       const touch = e.touches[0];
       const y = touch.clientY - rect.top;
       const percentage = 1 - (y / rect.height);
-      const value = 0.6 + (percentage * (1.0 - 0.6));
-      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      const value = CONFIG.minSpeed + (percentage * (CONFIG.maxSpeed - CONFIG.minSpeed));
+      const clampedValue = Math.max(CONFIG.minSpeed, Math.min(CONFIG.maxSpeed, value));
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
@@ -1404,8 +1406,8 @@
       const touch = e.touches[0];
       const y = touch.clientY - rect.top;
       const percentage = 1 - (y / rect.height);
-      const value = 0.6 + (percentage * (1.0 - 0.6));
-      const clampedValue = Math.max(0.6, Math.min(1.0, value));
+      const value = CONFIG.minSpeed + (percentage * (CONFIG.maxSpeed - CONFIG.minSpeed));
+      const clampedValue = Math.max(CONFIG.minSpeed, Math.min(CONFIG.maxSpeed, value));
       
       speedSlider.value = clampedValue;
       updateSpeed(clampedValue);
@@ -1420,7 +1422,9 @@
     currentSpeed = 1.0;
     updateSliderVisual(1.0);
     speedButtonText.textContent = '100'; // Inicializar el texto del botón
-    // Asegurar que el input range también tenga el valor correcto
+    // Configurar el input range con los valores de CONFIG
+    speedSlider.min = CONFIG.minSpeed;
+    speedSlider.max = CONFIG.maxSpeed;
     speedSlider.value = 1.0;
     
     // Asegurar que la velocidad se aplique desde el inicio
