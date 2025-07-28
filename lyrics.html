@@ -486,7 +486,7 @@
       font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
       font-weight:700;
       letter-spacing: -0.6px;
-      padding: 0 0 160px 0;
+      padding: 0 0 160px 10px;
       line-height: normal;
       box-sizing: border-box;
       z-index: 20; /* Asegúrate de que esté por encima de otros elementos */
@@ -517,6 +517,26 @@
       0% { background-color: rgba(255, 255, 255, 0); }
       50% { background-color: rgba(255, 255, 255, 0.2); }
       100% { background-color: rgba(255, 255, 255, 0); }
+    }
+
+    /* Contenedor para las líneas laterales */
+    .lines-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100vh;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    /* Estilo para cada línea lateral */
+    .side-line {
+      position: absolute;
+      left: 0;
+      width: 4px;
+      background-color: #444;
+      transition: background-color 0.3s ease;
     }
     
     .flash-scroll-auto {
@@ -552,6 +572,7 @@
   <div id="error-message"></div>
   <div id="loading-audio" style="display:none; color:#4a9eff; font-size:1.2em; margin:20px;">Cargando audio...</div>
   <div class="fixed-text-container"></div>
+  <div class="lines-container" id="linesContainer"></div>
   <div class="secciones-fijas">
     <div class="player-controls" id="playerControls">
       <div id="secciones"></div>
@@ -649,6 +670,12 @@
           playerControls.style.display = 'block';
           crearBotonesSecciones(secciones);
         }
+        // Intentar generar líneas laterales si las letras ya están cargadas
+        if (lineas.length > 0) {
+          setTimeout(() => {
+            generarLineasLaterales();
+          }, 100);
+        }
       })
       .catch(error => {
         console.error('Error al cargar secciones.json:', error);
@@ -687,6 +714,10 @@
       "instrumental": "#2196F3", // Azul
       "coda": "#2196F3" // Azul
     };
+
+    // Declarar variables globales necesarias
+    const lineas = [];
+    const letraContainer = document.querySelector('.fixed-text-container');
 
     // Inicializar elementos del DOM
     const audioElement = document.createElement('audio');
@@ -869,6 +900,11 @@
         }
       }
     }, true); // Usar captura para detectar scroll en cualquier contenedor
+
+    // Actualizar posición de líneas laterales cuando hay scroll en el contenedor de letras
+    letraContainer.addEventListener('scroll', () => {
+      actualizarLineasLaterales();
+    });
 
     function actualizarBotonSeleccionado(tiempoActual, forzarSeleccion = false) {
       if (isSeeking) {
@@ -1498,11 +1534,13 @@
       }
     }
     adjustTitlePosition();
-    window.addEventListener('resize', adjustTitlePosition);
-
-    const lineas = [];
-
-    const letraContainer = document.querySelector('.fixed-text-container');
+    window.addEventListener('resize', () => {
+      adjustTitlePosition();
+      // Actualizar líneas laterales cuando cambia el tamaño de ventana
+      setTimeout(() => {
+        actualizarLineasLaterales();
+      }, 100);
+    });
 
     const SEPARACION_ENTRE_PARRAFOS = 40; // Espaciado entre párrafos (en píxeles)
     const SEPARACION_ENTRE_TIEMPOS = 12; // Espaciado entre líneas con tiempos diferentes (en píxeles)
@@ -1529,6 +1567,130 @@
           </p>
         `;
       }).join('');
+      
+      // Generar las líneas laterales después de renderizar el texto
+      setTimeout(() => {
+        generarLineasLaterales();
+      }, 100);
+    }
+
+    function generarLineasLaterales() {
+      const linesContainer = document.getElementById('linesContainer');
+      if (!linesContainer) return;
+      
+      // Verificar que tengamos tanto las letras como las secciones cargadas
+      if (lineas.length === 0 || !seccionesPorCancion[songName]) {
+        return;
+      }
+      
+      linesContainer.innerHTML = ''; // Limpiar líneas existentes
+      
+      const lineasDOM = document.querySelectorAll('.linea');
+      
+      // Agrupar líneas continuas (que no tienen <br> entre ellas)
+      const grupos = [];
+      let grupoActual = [];
+      
+      lineas.forEach((linea, index) => {
+        grupoActual.push(index);
+        
+        // Si la línea actual o la siguiente tienen <br>, cerrar el grupo
+        const siguienteLinea = lineas[index + 1];
+        if (linea.contenido.includes('<br>') || !siguienteLinea) {
+          grupos.push([...grupoActual]);
+          grupoActual = [];
+        }
+      });
+      
+      // Crear líneas laterales para cada grupo
+      grupos.forEach(grupo => {
+        if (grupo.length === 0) return;
+        
+        const primeraLinea = lineas[grupo[0]];
+        const seccionColor = obtenerColorSeccionParaLinea(primeraLinea.tiempo);
+        
+        const primerElemento = lineasDOM[grupo[0]];
+        const ultimoElemento = lineasDOM[grupo[grupo.length - 1]];
+        
+        if (!primerElemento || !ultimoElemento) return;
+        
+        const sideLineDiv = document.createElement('div');
+        sideLineDiv.className = 'side-line';
+        sideLineDiv.dataset.grupo = grupo.join(',');
+        sideLineDiv.style.backgroundColor = seccionColor;
+        
+        // Calcular posición del grupo completo
+        const rectPrimero = primerElemento.getBoundingClientRect();
+        const rectUltimo = ultimoElemento.getBoundingClientRect();
+        
+        // Calcular posición directamente desde el viewport
+        const topInicio = rectPrimero.top;
+        const topFinal = rectUltimo.bottom;
+        
+        sideLineDiv.style.top = topInicio + 'px';
+        sideLineDiv.style.height = (topFinal - topInicio) + 'px';
+        
+        linesContainer.appendChild(sideLineDiv);
+      });
+    }
+    
+    function obtenerColorSeccionParaLinea(tiempoLinea) {
+      // Cargar las secciones desde secciones.json para esta canción
+      const seccionesCancion = seccionesPorCancion[songName];
+      if (!seccionesCancion) return sectionColors.estrofa || '#444';
+      
+      // Encontrar la sección correspondiente al tiempo de la línea
+      let seccionActual = seccionesCancion[0];
+      for (let i = 0; i < seccionesCancion.length; i++) {
+        if (tiempoLinea >= seccionesCancion[i].inicio) {
+          seccionActual = seccionesCancion[i];
+        } else {
+          break;
+        }
+      }
+      
+      return sectionColors[seccionActual.etiqueta] || sectionColors.estrofa || '#444';
+    }
+    
+    function actualizarPosicionLineaLateral(sideLineDiv, lineaDOM) {
+      const rect = lineaDOM.getBoundingClientRect();
+      const containerRect = letraContainer.getBoundingClientRect();
+      
+      // Calcular la posición relativa al contenedor de texto
+      const topRelativo = rect.top - containerRect.top + letraContainer.scrollTop;
+      const height = rect.height;
+      
+      sideLineDiv.style.top = topRelativo + 'px';
+      sideLineDiv.style.height = height + 'px';
+    }
+    
+    function actualizarLineasLaterales() {
+      const sideLines = document.querySelectorAll('.side-line');
+      const lineasDOM = document.querySelectorAll('.linea');
+      
+      sideLines.forEach((sideLineDiv) => {
+        const grupo = sideLineDiv.dataset.grupo;
+        if (!grupo) return;
+        
+        const indices = grupo.split(',').map(Number);
+        const primerIndice = indices[0];
+        const ultimoIndice = indices[indices.length - 1];
+        
+        const primerElemento = lineasDOM[primerIndice];
+        const ultimoElemento = lineasDOM[ultimoIndice];
+        
+        if (!primerElemento || !ultimoElemento) return;
+        
+        const rectPrimero = primerElemento.getBoundingClientRect();
+        const rectUltimo = ultimoElemento.getBoundingClientRect();
+        
+        // Calcular posición directamente desde el viewport
+        const topInicio = rectPrimero.top;
+        const topFinal = rectUltimo.bottom;
+        
+        sideLineDiv.style.top = topInicio + 'px';
+        sideLineDiv.style.height = (topFinal - topInicio) + 'px';
+      });
     }
 
     function moverACodigoDeTiempo(tiempo) {
