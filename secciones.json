@@ -63,6 +63,15 @@
     { "etiqueta": "instrumental", "inicio": 153.2 },
     { "etiqueta": "coro", "inicio": 169.3 }
 ],
+"89":[
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 29.4 },
+    { "etiqueta": "instrumental", "inicio": 54.8 },
+    { "etiqueta": "estrofa", "inicio": 62.7 },
+    { "etiqueta": "instrumental", "inicio": 76.2 },
+    { "etiqueta": "estrofa", "inicio": 83.6 },
+    { "etiqueta": "coda", "inicio": 98.3 }
+],
 "85":[
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 5.5 },
