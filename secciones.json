@@ -119,6 +119,10 @@
     { "etiqueta": "instrumental", "inicio": 35.1 },
     { "etiqueta": "coda", "inicio": 52.6 }
 ],
+"80":[
+    { "etiqueta": "estrofa", "inicio": 0 },
+   { "etiqueta": "estrofa", "inicio": 19.8 }
+],
 "79":[
     { "etiqueta": "intro", "inicio": 0 },
     { "etiqueta": "estrofa", "inicio": 14 },
