@@ -1,12 +1,12 @@
 {
 
   "102":[
-{ "etiqueta": "intro", "inicio": 0 },
-{ "etiqueta": "estrofa", "inicio": 21.6 },
-{ "etiqueta": "coro", "inicio": 41.5 },
-{ "etiqueta": "estrofa", "inicio": 57.6 },
-{ "etiqueta": "coro", "inicio": 73.3 },
-{ "etiqueta": "coda", "inicio": 89.3 }
+    { "etiqueta": "intro", "inicio": 0 },
+    { "etiqueta": "estrofa", "inicio": 21.6 },
+    { "etiqueta": "coro", "inicio": 41.5 },
+    { "etiqueta": "estrofa", "inicio": 57.6 },
+    { "etiqueta": "coro", "inicio": 73.3 },
+    { "etiqueta": "coda", "inicio": 89.3 }
   ],
     "99": [
     { "etiqueta": "intro", "inicio": 0 },
