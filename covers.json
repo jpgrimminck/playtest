@@ -1,5 +1,5 @@
 {
-  "totalCovers": 105,
+  "totalCovers": 106,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -105,6 +105,7 @@
     {"id": 102, "nombre": "Piratas del caribe", "artista": "Lucas", "tipo": "c"},
     {"id": 103, "nombre": "Soy Enigma", "artista": "SuperThings", "tipo": "y"},
     {"id": 104, "nombre": "Let it be", "artista": "Dante", "tipo": "c"},
-    {"id": 105, "nombre": "Inevitable", "artista": "Josefa", "tipo": "c"}
+    {"id": 105, "nombre": "Inevitable", "artista": "Josefa", "tipo": "c"},
+    {"id": 106, "nombre": "Agustín Lava's Chicken", "artista": "Agustín", "tipo": "c"}
   ]
 }
