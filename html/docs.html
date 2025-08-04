@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Galería Vertical Móvil</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
     <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
@@ -75,7 +75,7 @@
         
         const galleryContainer = document.getElementById('gallery');
         // Usar el songId de los parámetros para determinar la carpeta
-        const basePath = songId ? `docs/${songId}/` : 'docs/79/';
+        const basePath = songId ? `../docs/${songId}/` : '../docs/79/';
         
 
         
@@ -256,7 +256,7 @@
             if (foundImages.length === 0 && foundPDFs.length === 0) {
                 const noContentMessage = document.createElement('div');
                 noContentMessage.className = 'no-images-message';
-                noContentMessage.textContent = `No se encontraron imágenes ni PDFs en la carpeta docs/${songId || '79'}/`;
+                noContentMessage.textContent = `No se encontraron imágenes ni PDFs en la carpeta ../docs/${songId || '79'}/`;
                 galleryContainer.appendChild(noContentMessage);
             }
         }

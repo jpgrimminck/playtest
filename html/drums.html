@@ -9,8 +9,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-touch-fullscreen" content="yes">
   <meta name="apple-mobile-web-app-title" content="Música">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
   <meta name="description" content="Reproductor de música con secciones">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
@@ -647,21 +647,21 @@
     let drumsData = {};
 
     // Cargar secciones.json
-    fetch('json/secciones.json')
+    fetch('../json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar ../json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
       .then(data => {
         seccionesPorCancion = data;
         // Cargar drums.json después de secciones.json
-        return fetch('json/drums.json');
+        return fetch('../json/drums.json');
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar json/drums.json: ${response.statusText}`);
+          throw new Error(`Error al cargar ../json/drums.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -693,7 +693,9 @@
     // Inicializar elementos del DOM
     const audioElement = document.createElement('audio');
     audioElement.id = 'audio';
-    audioElement.src = audioUrl;
+    // Ajustar la ruta del audio si es relativa
+    const adjustedAudioUrl = audioUrl && !audioUrl.startsWith('http') && !audioUrl.startsWith('../') ? `../${audioUrl}` : audioUrl;
+    audioElement.src = adjustedAudioUrl;
     audioElement.preload = 'auto';
     document.body.appendChild(audioElement);
 
@@ -758,9 +760,12 @@
 
     // Mostrar detalles de la canción
     if (songName) {
+      // Ajustar la ruta de la imagen si es relativa
+      const adjustedCover = cover && !cover.startsWith('http') && !cover.startsWith('../') ? `../${cover}` : cover;
+      
       document.getElementById("fixedHeader").innerHTML = `
         <div class="cover-container">
-          <img class="cover" src="${cover}" alt="Carátula">
+          <img class="cover" src="${adjustedCover}" alt="Carátula">
         </div>
         <h1>${title}</h1>
       `;
@@ -867,7 +872,7 @@
         }
         
         // Construir la ruta de la imagen en la carpeta drums con un parámetro para invalidar caché
-        const imagePath = `drums/${imageName}?v=${new Date().getTime()}`;
+        const imagePath = `../drums/${imageName}?v=${new Date().getTime()}`;
         img.src = imagePath;
         
         // Manejar error de carga de imagen

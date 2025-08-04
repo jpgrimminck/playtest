@@ -9,8 +9,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-touch-fullscreen" content="yes">
   <meta name="apple-mobile-web-app-title" content="Música">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
   <meta name="description" content="Reproductor de música con secciones">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
@@ -655,10 +655,10 @@
     // Cargar dinámicamente secciones.json
     let seccionesPorCancion = {};
 
-    fetch('json/secciones.json')
+    fetch('../json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar ../json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -678,15 +678,15 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar json/secciones.json:', error);
+        console.error('Error al cargar ../json/secciones.json:', error);
         showError('No se pudo cargar la información de las secciones.');
       });
 
     // Cargar dinámicamente lyrics.json
-    fetch('json/lyrics.json')
+    fetch('../json/lyrics.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar json/lyrics.json: ${response.statusText}`);
+          throw new Error(`Error al cargar ../json/lyrics.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -701,7 +701,7 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar json/lyrics.json:', error);
+        console.error('Error al cargar ../json/lyrics.json:', error);
       });
 
     // Ejemplo de colores para cada sección
@@ -722,7 +722,9 @@
     // Inicializar elementos del DOM
     const audioElement = document.createElement('audio');
     audioElement.id = 'audio';
-    audioElement.src = audioUrl;
+    // Ajustar la ruta del audio si es relativa
+    const adjustedAudioUrl = audioUrl && !audioUrl.startsWith('http') && !audioUrl.startsWith('../') ? `../${audioUrl}` : audioUrl;
+    audioElement.src = adjustedAudioUrl;
     audioElement.preload = 'auto';
     document.body.appendChild(audioElement);
 
@@ -795,9 +797,12 @@
 
     // Mostrar detalles de la canción
     if (songName) {
+      // Ajustar la ruta de la imagen si es relativa
+      const adjustedCover = cover && !cover.startsWith('http') && !cover.startsWith('../') ? `../${cover}` : cover;
+      
       document.getElementById("fixedHeader").innerHTML = `
         <div class="cover-container">
-          <img class="cover" src="${cover}" alt="Carátula">
+          <img class="cover" src="${adjustedCover}" alt="Carátula">
         </div>
         <h1>${title}</h1>
       `;

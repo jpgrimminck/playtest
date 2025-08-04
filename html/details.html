@@ -9,8 +9,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-touch-fullscreen" content="yes">
   <meta name="apple-mobile-web-app-title" content="Música">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
   <meta name="description" content="Reproductor de música con secciones">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
@@ -412,10 +412,10 @@
         mostrarDetallesCancion({ id: songId, cover: coverUrl, nombre: title, audio: audioUrl });
       } else if (songId) {
         // Si no hay parámetros completos, cargar los datos desde covers.json
-        fetch('json/covers.json')
+        fetch('../json/covers.json')
           .then(response => {
             if (!response.ok) {
-              throw new Error(`Error al cargar json/covers.json: ${response.statusText}`);
+              throw new Error(`Error al cargar ../json/covers.json: ${response.statusText}`);
             }
             return response.json();
           })
@@ -428,7 +428,7 @@
             }
           })
           .catch(error => {
-            console.error('Error al cargar json/covers.json:', error);
+            console.error('Error al cargar ../json/covers.json:', error);
             mostrarError('No se pudo cargar la información de la canción.');
           });
       } else {
@@ -438,10 +438,13 @@
 
     // Función para mostrar los detalles de la canción
     function mostrarDetallesCancion(song) {
+      // Ajustar la ruta de la imagen si es relativa
+      const adjustedCoverSrc = song.cover && !song.cover.startsWith('http') && !song.cover.startsWith('../') ? `../${song.cover}` : song.cover;
+      
       // Actualizar solo el contenedor #fixedHeader
       document.getElementById('fixedHeader').innerHTML = `
         <div class="cover-container">
-          <img class="cover" src="${song.cover}" alt="Carátula">
+          <img class="cover" src="${adjustedCoverSrc}" alt="Carátula">
         </div>
         <h1>${song.nombre}</h1>
       `;
@@ -449,7 +452,9 @@
       // Actualizar el audio en el reproductor
       const audioElement = document.getElementById('audio');
       if (audioElement) {
-        audioElement.src = song.audio;
+        // Ajustar la ruta del audio si es relativa
+        const adjustedAudioSrc = song.audio && !song.audio.startsWith('http') && !song.audio.startsWith('../') ? `../${song.audio}` : song.audio;
+        audioElement.src = adjustedAudioSrc;
         audioElement.load();
       }
     }
@@ -482,10 +487,10 @@
     // Cargar dinámicamente secciones.json
     let seccionesPorCancion = {};
 
-    fetch('json/secciones.json')
+    fetch('../json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar ../json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -499,7 +504,7 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar json/secciones.json:', error);
+        console.error('Error al cargar ../json/secciones.json:', error);
         showError('No se pudo cargar la información de las secciones.');
       });
 
@@ -517,7 +522,9 @@
     // Inicializar elementos del DOM
     const audio = document.createElement('audio');
     audio.id = 'audio'; // Asignar un ID sigue siendo útil
-    audio.src = audioUrl;
+    // Ajustar la ruta del audio si es relativa
+    const adjustedAudioUrl = audioUrl && !audioUrl.startsWith('http') && !audioUrl.startsWith('../') ? `../${audioUrl}` : audioUrl;
+    audio.src = adjustedAudioUrl;
     audio.preload = 'auto';
     document.body.appendChild(audio);
 
@@ -568,9 +575,12 @@
 
     // Mostrar detalles de la canción
     if (songName) {
+      // Ajustar la ruta de la imagen si es relativa
+      const adjustedCover = cover && !cover.startsWith('http') && !cover.startsWith('../') ? `../${cover}` : cover;
+      
       document.getElementById("fixedHeader").innerHTML = `
         <div class="cover-container">
-          <img class="cover" src="${cover}" alt="Carátula">
+          <img class="cover" src="${adjustedCover}" alt="Carátula">
         </div>
         <h1>${title}</h1>
       `;
@@ -671,7 +681,7 @@
       forwardArrow.style.transform = 'none';
       forwardArrow.innerHTML = `
         <svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
-          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="icons/mic.svg"/>
+          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="../icons/mic.svg"/>
         </svg>
       `;
 
@@ -686,7 +696,7 @@
       drumsArrow.style.transform = 'none';
       drumsArrow.innerHTML = `
         <svg id="Drums_1" data-name="Drums 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
-          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="icons/drums.svg"/>
+          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="../icons/drums.svg"/>
         </svg>
       `;
 
@@ -701,7 +711,7 @@
       docsArrow.style.transform = 'none';
       docsArrow.innerHTML = `
         <svg id="Note_1" data-name="Note 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
-          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="icons/note.svg"/>
+          <image width="814" height="980" transform="translate(3.78 2) scale(.02)" xlink:href="../icons/note.svg"/>
         </svg>
       `;
 
@@ -723,10 +733,10 @@
       docsArrow.href = `docs.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
 
       // Verificar si el ID existe en lyrics.json antes de mostrar el botón "forward-arrow"
-      fetch('json/lyrics.json')
+      fetch('../json/lyrics.json')
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Error al cargar json/lyrics.json: ${response.statusText}`);
+            throw new Error(`Error al cargar ../json/lyrics.json: ${response.statusText}`);
           }
           return response.json();
         })
@@ -738,15 +748,15 @@
           }
         })
         .catch(error => {
-          console.error('Error al verificar el ID en json/lyrics.json:', error);
+          console.error('Error al verificar el ID en ../json/lyrics.json:', error);
           forwardArrow.style.display = 'none';
         });
 
       // Verificar si el ID existe en drums.json antes de mostrar el botón "drums-arrow"
-      fetch('json/drums.json')
+      fetch('../json/drums.json')
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Error al cargar json/drums.json: ${response.statusText}`);
+            throw new Error(`Error al cargar ../json/drums.json: ${response.statusText}`);
           }
           return response.json();
         })
@@ -758,13 +768,13 @@
           }
         })
         .catch(error => {
-          console.error('Error al verificar el ID en json/drums.json:', error);
+          console.error('Error al verificar el ID en ../json/drums.json:', error);
           drumsArrow.style.display = 'none';
         });
 
       // Verificar si existe la carpeta docs/{song}/ antes de mostrar el botón "docs-arrow"
       // Verificar tanto 1.jpeg como 1.pdf
-      const docsPath = `docs/${song}/`;
+      const docsPath = `../docs/${song}/`;
       let docsFound = false;
       let checksCompleted = 0;
       
@@ -1120,7 +1130,7 @@
       }
       
       // Navegar de forma simple
-      window.location.href = `index.html?song=${songId}`;
+      window.location.href = `../index.html?song=${songId}`;
     });
 
     function forceFullscreen() {
