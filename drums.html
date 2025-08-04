@@ -647,21 +647,21 @@
     let drumsData = {};
 
     // Cargar secciones.json
-    fetch('secciones.json')
+    fetch('json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
       .then(data => {
         seccionesPorCancion = data;
         // Cargar drums.json después de secciones.json
-        return fetch('drums.json');
+        return fetch('json/drums.json');
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar drums.json: ${response.statusText}`);
+          throw new Error(`Error al cargar json/drums.json: ${response.statusText}`);
         }
         return response.json();
       })

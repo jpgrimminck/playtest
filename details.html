@@ -412,10 +412,10 @@
         mostrarDetallesCancion({ id: songId, cover: coverUrl, nombre: title, audio: audioUrl });
       } else if (songId) {
         // Si no hay parámetros completos, cargar los datos desde covers.json
-        fetch('covers.json')
+        fetch('json/covers.json')
           .then(response => {
             if (!response.ok) {
-              throw new Error(`Error al cargar covers.json: ${response.statusText}`);
+              throw new Error(`Error al cargar json/covers.json: ${response.statusText}`);
             }
             return response.json();
           })
@@ -428,7 +428,7 @@
             }
           })
           .catch(error => {
-            console.error('Error al cargar covers.json:', error);
+            console.error('Error al cargar json/covers.json:', error);
             mostrarError('No se pudo cargar la información de la canción.');
           });
       } else {
@@ -482,10 +482,10 @@
     // Cargar dinámicamente secciones.json
     let seccionesPorCancion = {};
 
-    fetch('secciones.json')
+    fetch('json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -499,7 +499,7 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar secciones.json:', error);
+        console.error('Error al cargar json/secciones.json:', error);
         showError('No se pudo cargar la información de las secciones.');
       });
 
@@ -723,10 +723,10 @@
       docsArrow.href = `docs.html?song=${encodeURIComponent(song)}&cover=${encodeURIComponent(cover)}&title=${encodeURIComponent(title)}&audio=${encodeURIComponent(audioUrlParam)}`;
 
       // Verificar si el ID existe en lyrics.json antes de mostrar el botón "forward-arrow"
-      fetch('lyrics.json')
+      fetch('json/lyrics.json')
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Error al cargar lyrics.json: ${response.statusText}`);
+            throw new Error(`Error al cargar json/lyrics.json: ${response.statusText}`);
           }
           return response.json();
         })
@@ -738,15 +738,15 @@
           }
         })
         .catch(error => {
-          console.error('Error al verificar el ID en lyrics.json:', error);
+          console.error('Error al verificar el ID en json/lyrics.json:', error);
           forwardArrow.style.display = 'none';
         });
 
       // Verificar si el ID existe en drums.json antes de mostrar el botón "drums-arrow"
-      fetch('drums.json')
+      fetch('json/drums.json')
         .then(response => {
           if (!response.ok) {
-            throw new Error(`Error al cargar drums.json: ${response.statusText}`);
+            throw new Error(`Error al cargar json/drums.json: ${response.statusText}`);
           }
           return response.json();
         })
@@ -758,7 +758,7 @@
           }
         })
         .catch(error => {
-          console.error('Error al verificar el ID en drums.json:', error);
+          console.error('Error al verificar el ID en json/drums.json:', error);
           drumsArrow.style.display = 'none';
         });
 

@@ -230,7 +230,7 @@
     -------------------------------------------------------------------------- */
     async function cargarMetadatos() {
       try {
-        const response = await fetch('covers.json');
+        const response = await fetch('json/covers.json');
         const data = await response.json();
         totalCovers = data.totalCovers;
         metadatos = data.covers.reduce((acc, cover) => {

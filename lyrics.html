@@ -655,10 +655,10 @@
     // Cargar dinámicamente secciones.json
     let seccionesPorCancion = {};
 
-    fetch('secciones.json')
+    fetch('json/secciones.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar secciones.json: ${response.statusText}`);
+          throw new Error(`Error al cargar json/secciones.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -678,15 +678,15 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar secciones.json:', error);
+        console.error('Error al cargar json/secciones.json:', error);
         showError('No se pudo cargar la información de las secciones.');
       });
 
     // Cargar dinámicamente lyrics.json
-    fetch('lyrics.json')
+    fetch('json/lyrics.json')
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Error al cargar lyrics.json: ${response.statusText}`);
+          throw new Error(`Error al cargar json/lyrics.json: ${response.statusText}`);
         }
         return response.json();
       })
@@ -701,7 +701,7 @@
         }
       })
       .catch(error => {
-        console.error('Error al cargar lyrics.json:', error);
+        console.error('Error al cargar json/lyrics.json:', error);
       });
 
     // Ejemplo de colores para cada sección

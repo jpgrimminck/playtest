@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // ---- MODIFICADO: Rutas ajustadas para salir de la carpeta 'admin' ----
             const [coversRes, lyricsRes, seccionesRes, drumsRes] = await Promise.all([
-                fetch('../covers.json'),
-                fetch('../lyrics.json'),
-                fetch('../secciones.json'),
-                fetch('../drums.json'),
+                fetch('../json/covers.json'),
+                fetch('../json/lyrics.json'),
+                fetch('../json/secciones.json'),
+                fetch('../json/drums.json'),
             ]);
 
             const coversData = await coversRes.json();
