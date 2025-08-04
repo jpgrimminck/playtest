@@ -1,5 +1,5 @@
 {
-  "totalCovers": 109,
+  "totalCovers": 111,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -109,6 +109,8 @@
     {"id": 106, "nombre": "Agustín Lava's Chicken", "artista": "Agustín", "tipo": "c"},
     {"id": 107, "nombre": "Better than Revenge", "artista": "Taylor Swift", "tipo": "y"},
     {"id": 108, "nombre": "Fly me to the moon", "artista": "Frank Sinatra", "tipo": "y"},
-    {"id": 109, "nombre": "In the stars", "artista": "Martín", "tipo": "c"}
+    {"id": 109, "nombre": "In the stars", "artista": "Martín", "tipo": "c"},
+    {"id": 110, "nombre": "Las pelotitas", "artista": "Juan, Mateo y Lucas", "tipo": "i"},
+    {"id": 111, "nombre": "Bombardino Crocrodrilo", "artista": "Juan", "tipo": "c"}
   ]
 }
