@@ -435,3 +435,26 @@ html, body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Deshabilita selección por long-press y el menú contextual en iOS/Android */
+html, body, .container, .main, .sidebar, .miniatura, button, a, img, svg, div, p, span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* evita el menú al mantener presionado */
+  -webkit-tap-highlight-color: transparent; /* quita highlight azul */
+}
+
+/* Evita arrastrar imágenes (iOS/Safari) */
+img {
+  -webkit-user-drag: none;
+  /* user-drag: none;  eliminado por no estándar */
+}
+
+/* Permitir selección y callout en inputs si los usas */
+input, textarea, select {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
