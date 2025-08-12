@@ -343,6 +343,16 @@ html, body {
 .pause-icon { display: flex; gap: 10px; }
 .pause-icon div { width: 10px; height: 40px; background: black; }
 
+/* Ícono de replay (Unicode) */
+.replay-icon {
+  display: block;
+  font-size: 80px; /* tamaño grande dentro del botón 150x150 */
+  line-height: 1;
+  width: auto;
+  height: auto;
+  color: black;
+}
+
 /* Botón de guitarra para alternar audio secundario */
 #guitarraBtn {
   width: 50px;

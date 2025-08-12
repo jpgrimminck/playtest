@@ -81,6 +81,7 @@ const seekBar             = document.getElementById('seekBar');
 /* Estado de audio actual */
 let currentAudio = audio;
 let isAlt        = false;             // ¿Estamos usando audio alternativo?
+const endedState = { value: false };  // ¿La pista terminó?
 
 /* --------------------------------------------------------------------------
    FUNCIONES PRINCIPALES
@@ -105,8 +106,8 @@ function selectAudio (filename, coverImage, metadata) {
       artist: metadata.artista,
       artwork:[{ src: `${folders[2]}/${coverImage}`, sizes:'512x512', type:'image/jpeg' }]
     });
-    navigator.mediaSession.setActionHandler('play',  () => { currentAudio.play();  setIcon('pause'); });
-    navigator.mediaSession.setActionHandler('pause', () => { currentAudio.pause(); setIcon('play');  });
+    navigator.mediaSession.setActionHandler('play',  () => { togglePlay(); });
+    navigator.mediaSession.setActionHandler('pause', () => { currentAudio.pause(); setIcon('play'); });
   }
 
   const coverIndex = parseInt(filename.match(/(\d+)\.mp3/)[1], 10);
@@ -133,21 +134,27 @@ function selectAudio (filename, coverImage, metadata) {
   currentAudio.load();
   seekBar.value = 0;
   seekBar.max   = 1;
+  endedState.value = false;
   setIcon('play');
 }
 
 function togglePlay() {
   if (!currentAudio.src) return;
 
-  // Sincronizar el tiempo del slider con el audio antes de reproducir
-  currentAudio.currentTime = parseFloat(seekBar.value);
+  // Si terminó, al tocar debemos reiniciar y reproducir
+  if (endedState.value) {
+    currentAudio.currentTime = 0;
+    seekBar.value = 0;
+    endedState.value = false;
+  } else {
+    // Sincroniza con el slider antes de reproducir
+    currentAudio.currentTime = parseFloat(seekBar.value);
+  }
 
   if (currentAudio.paused) {
     const playPromise = currentAudio.play();
     if (playPromise !== undefined) {
-      playPromise.catch(error => {
-        console.error("Error playing audio:", error);
-      });
+      playPromise.catch(error => console.error("Error playing audio:", error));
     }
   } else {
     currentAudio.pause();
@@ -159,9 +166,16 @@ function setIcon (state) {
   if (state === 'play') {
     icon.className = 'icon play-icon';
     icon.innerHTML = '';
-  } else {
+  } else if (state === 'pause') {
     icon.className = 'pause-icon';
     icon.innerHTML = '<div></div><div></div>';
+  } else if (state === 'replay') {
+    icon.className = 'replay-icon';
+    icon.innerHTML = '↻';
+  } else {
+    // fallback
+    icon.className = 'icon play-icon';
+    icon.innerHTML = '';
   }
 }
 
@@ -172,11 +186,22 @@ function setIcon (state) {
       seekBar.value = Math.floor(e.target.currentTime);
     }
   });
-  aud.addEventListener('ended', () => setIcon('play'));
-  aud.addEventListener('playing', () => setIcon('pause'));
+  aud.addEventListener('ended', () => {
+    endedState.value = true;
+    setIcon('replay');
+  });
+  aud.addEventListener('playing', () => {
+    endedState.value = false;
+    setIcon('pause');
+  });
 });
 
 seekBar.addEventListener('input', () => {
+  if (endedState.value) {
+    // Si el usuario mueve el slider después de terminar, volvemos a estado listo para play
+    endedState.value = false;
+    if (currentAudio.paused) setIcon('play');
+  }
   currentAudio.currentTime = seekBar.value;
 });
 
@@ -235,6 +260,7 @@ window.addEventListener('DOMContentLoaded', () => {
   audio.addEventListener('loadedmetadata', () => {
     seekBar.max = currentAudio.duration;
     seekBar.value = 0;
+    endedState.value = false;
     setIcon('play');
   });
 
