@@ -1,5 +1,5 @@
 {
-  "totalCovers": 111,
+  "totalCovers": 112,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -111,6 +111,7 @@
     {"id": 108, "nombre": "Fly me to the moon", "artista": "Frank Sinatra", "tipo": "y"},
     {"id": 109, "nombre": "In the stars", "artista": "Martín", "tipo": "c"},
     {"id": 110, "nombre": "Las pelotitas", "artista": "Juan, Mateo y Lucas", "tipo": "i"},
-    {"id": 111, "nombre": "Bombardino Crocrodrilo", "artista": "Juan", "tipo": "c"}
+    {"id": 111, "nombre": "Bombardino Crocrodrilo", "artista": "Juan", "tipo": "c"},
+    {"id": 112, "nombre": "All I want for Christmas", "artista": "Josefa", "tipo": "c"}
   ]
 }
