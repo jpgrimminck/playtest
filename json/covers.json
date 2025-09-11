@@ -116,6 +116,7 @@
     {"id": 113, "nombre": "Piratas del caribe", "artista": "Samu y Berna", "tipo": "c"},
     {"id": 114, "nombre": "Better than Revenge", "artista": "Clarita", "tipo": "c"},
     {"id": 115, "nombre": "Betti Caro", "artista": "Emma", "tipo": "i"},
-    {"id": 116, "nombre": "Chocolate", "artista": "Josefa", "tipo": "c"}
+    {"id": 116, "nombre": "Chocolate", "artista": "Josefa", "tipo": "c"},
+    {"id": 117, "nombre": "Cerf Volant", "artista": "Josefa", "tipo": "c"}
   ]
 }
