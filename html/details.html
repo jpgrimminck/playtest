@@ -1051,12 +1051,14 @@
           case 'ArrowLeft':
             if (!isRewinding) {
               isRewinding = true;
+              rewindBtn.style.boxShadow = '0 0 10px rgba(74, 158, 255, 0.8)';
               rewindBtn.dispatchEvent(new Event('mousedown'));
             }
             break;
           case 'ArrowRight':
             if (!isForwarding) {
               isForwarding = true;
+              forwardBtn.style.boxShadow = '0 0 10px rgba(74, 158, 255, 0.8)';
               forwardBtn.dispatchEvent(new Event('mousedown'));
             }
             break;
@@ -1074,12 +1076,14 @@
           case 'ArrowLeft':
             if (isRewinding) {
               isRewinding = false;
+              rewindBtn.style.boxShadow = '';
               rewindBtn.dispatchEvent(new Event('mouseup'));
             }
             break;
           case 'ArrowRight':
             if (isForwarding) {
               isForwarding = false;
+              forwardBtn.style.boxShadow = '';
               forwardBtn.dispatchEvent(new Event('mouseup'));
             }
             break;
