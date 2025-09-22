@@ -1,5 +1,5 @@
 {
-  "totalCovers": 117,
+  "totalCovers": 118,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -117,6 +117,7 @@
     {"id": 114, "nombre": "Better than Revenge", "artista": "Clarita", "tipo": "c"},
     {"id": 115, "nombre": "Betti Caro", "artista": "Emma", "tipo": "i"},
     {"id": 116, "nombre": "Chocolate", "artista": "Josefa", "tipo": "c"},
-    {"id": 117, "nombre": "Cerf Volant", "artista": "Josefa", "tipo": "c"}
+    {"id": 117, "nombre": "Cerf Volant", "artista": "Josefa", "tipo": "c"},
+    {"id": 118, "nombre": "Red", "artista": "Taylor Swift", "tipo": "y"}
   ]
 }
