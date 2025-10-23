@@ -1,5 +1,5 @@
 {
-  "totalCovers": 120,
+  "totalCovers": 121,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -120,6 +120,7 @@
     {"id": 117, "nombre": "Cerf Volant", "artista": "Josefa", "tipo": "c"},
     {"id": 118, "nombre": "Red", "artista": "Taylor Swift", "tipo": "y"},
     {"id": 119, "nombre": "Que bonita va", "artista": "Los huasos del camino viejo", "tipo": "y"},
-    {"id": 120, "nombre": "Los viejos estandartes ", "artista": "Los cuatro cuartos", "tipo": "y"}
+    {"id": 120, "nombre": "Los viejos estandartes ", "artista": "Los cuatro cuartos", "tipo": "y"},
+    {"id": 121, "nombre": "Piratas del Caribe", "artista": "Clemente y Santiago", "tipo": "c"}
   ]
 }
