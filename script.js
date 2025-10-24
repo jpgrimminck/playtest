@@ -337,3 +337,5 @@ function posicionarMiniatura(songId) {
     console.log(`No se encontró la miniatura con archivo ${targetFileName}.`);
   }
 }
+
+//aliya test
