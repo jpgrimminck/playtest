@@ -29,7 +29,10 @@ Platform to practice Music.
 3. Launch the app on your smartphone via the **Play locally** home screen icon.
 
 ## Branch Workflow
-_To be completed._
+- **Play Test repository (testing):** All contributors push their work directly to the `main` branch of the Play Test repository. Keep commits small and focused so reviewers can follow the change history easily.
+- **Verification:** Admin review and validate changes in the testing environment before moving them forward.
+- **Play repository (production):** Once a change is confirmed, the admin pulls the tested commits into the production repository and deploys.
+- **Rollback:** to be completed.
 
 ## Coding Standards
 _To be completed._
