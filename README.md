@@ -39,7 +39,12 @@ Platform to practice Music.
 2. **Prompt Using:** Don’t make any changes until you’re 95% confident you know what to build. Ask me follow-up questions until you reach that confidence, and tell me what changes you’ll make, in which files, and on which lines.
 
 ## Testing & QA
-_To be completed._
+1. Open the index.html file with Live Server and load it on your primary smartphone.
+2. If you are in agent mode, and request a change, after the agent finish the action, you will see live, the change locally, before you click in "keep the change". 
+3. If you are in manual mode, you need to saved the file, locally, with command+s, to see the change live.
+4. If you are agree with the change, 
+
+to be completed.
 
 ## Deployment
 _To be completed._
