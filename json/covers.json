@@ -1,5 +1,5 @@
 {
-  "totalCovers": 123,
+  "totalCovers": 124,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -123,6 +123,7 @@
     {"id": 120, "nombre": "Los viejos estandartes ", "artista": "Los cuatro cuartos", "tipo": "y"},
     {"id": 121, "nombre": "Piratas del Caribe", "artista": "Clemente y Santiago", "tipo": "c"},
     {"id": 122, "nombre": "Red", "artista": "Clarita", "tipo": "c"},
-    {"id": 123, "nombre": "Tralalero Tralalá", "artista": "Agustín", "tipo": "c"}
+    {"id": 123, "nombre": "Tralalero Tralalá", "artista": "Agustín", "tipo": "c"},
+    {"id": 124, "nombre": "I got a feeling", "artista": "Lucas", "tipo": "c"}
   ]
 }
