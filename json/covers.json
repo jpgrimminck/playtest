@@ -1,5 +1,5 @@
 {
-  "totalCovers": 125,
+  "totalCovers": 126,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -125,6 +125,7 @@
     {"id": 122, "nombre": "Red", "artista": "Clarita", "tipo": "c"},
     {"id": 123, "nombre": "Tralalero Tralalá", "artista": "Agustín", "tipo": "c"},
     {"id": 124, "nombre": "I got a feeling", "artista": "Lucas", "tipo": "c"},
-    {"id": 125, "nombre": "Navidad", "artista": "Pedro", "tipo": "c"}
+    {"id": 125, "nombre": "Navidad", "artista": "Pedro", "tipo": "c"},
+    {"id": 126, "nombre": "Riptide", "artista": "Clarita", "tipo": "c"}
   ]
 }
