@@ -1,5 +1,5 @@
 {
-  "totalCovers": 129,
+  "totalCovers": 130,
   "covers": [
     {"id": 1, "nombre": "Día de Enero", "artista": "Shakira", "tipo": "y"},
     {"id": 2, "nombre": "Hey Jude", "artista": "Beatles", "tipo": "y"},
@@ -129,6 +129,7 @@
     {"id": 126, "nombre": "Riptide", "artista": "Clarita", "tipo": "c"},
     {"id": 127, "nombre": "Soy Enigma", "artista": "Lucas", "tipo": "c"},
     {"id": 128, "nombre": "La Familia", "artista": "Juan", "tipo": "i"},
-    {"id": 129, "nombre": "Ciega, Sordo, Muda", "artista": "Josefa", "tipo": "c"}
+    {"id": 129, "nombre": "Ciega, Sordo, Muda", "artista": "Josefa", "tipo": "c"},
+    {"id": 130, "nombre": "Montagem Xonada", "artista": "Agustín", "tipo": "c"}
   ]
 }
